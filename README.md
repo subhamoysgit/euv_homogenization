@@ -4,3 +4,11 @@ Evaluated uncertainty on test set using model-ensemble is shown below-
 <p align="center">
 <img width="2000" src="loss_vs_patch.png">  
 </p>
+
+# Installation
+
+## using pip
+`pip install -r requirements.txt`
+
+## using Conda
+`conda create --name <env_name> --file requirements.txt`
