@@ -5,7 +5,7 @@ Created on Wed Jul 22 13:53:10 2020
 
 @author: subhamoy
 """
-def degrid_new(path):
+def degrid(path):
     import numpy as np
     import cv2
     import sunpy.map

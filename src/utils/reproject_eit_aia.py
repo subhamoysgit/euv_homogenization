@@ -6,7 +6,7 @@ Created on Wed Jul 22 13:53:10 2020
 @author: subhamoy
 """
 
-def reproject_eit_aia_new(file_e,file_a):
+def reproject_eit_aia(file_e,file_a):
     from scipy import ndimage
     import csv
     import tensorflow as tf
