@@ -35,7 +35,7 @@ def degrid(path):
     expanded_img[xsize+42:,42:ysize+42]=np.flip(grid[xsize-42:,:],1)
     expanded_img[42:xsize+42,ysize+42:]=np.flip(grid[:,ysize-42:],0)
     expanded_img[42:xsize+42,0:42]=np.flip(grid[:,0:42],1)
-    
+    ##median filter mask    
     filter_m = np.zeros((85,85),dtype=np.int16)
     filter_m[0,42] = 1
     filter_m[21,42] = 1
