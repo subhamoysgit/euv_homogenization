@@ -12,8 +12,13 @@ path = '/d0/'
 import pickle 
 
 import matplotlib.pyplot as plt
-from reproject_eit_aia_new import reproject_eit_aia_new
+
+_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
+_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
+sys.path.append(_SRC_DIR)
+
 from patch_generate import patch_generate
+from utils.reproject_eit_aia import reproject_eit_aia
 
 
 file_path = '/d1/fd/val/'
@@ -36,7 +41,7 @@ file_list_eit = sorted(files_e)
 for n in range(0,len(file_list_eit)):
   file_e = dir_e+file_list_eit[n]
   file_a = dir_a+file_list_aia[n]
-  eit_lr,eit_hr,mask,aia = reproject_eit_aia_new(file_e,file_a)
+  eit_lr,eit_hr,mask,aia = reproject_eit_aia(file_e,file_a)
   patches_e,patches_a,patches_na,titl = patch_generate(eit_lr,eit_hr,mask,aia,16,0)
   patches_es,patches_as,patches_nas,titl = patch_generate(eit_lr,eit_hr,mask,aia,16,1)
   name_e = 'eit_'+file_list_eit[n][3:11]
