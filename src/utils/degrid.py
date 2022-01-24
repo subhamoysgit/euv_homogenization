@@ -47,10 +47,12 @@ def degrid(path):
     filter_m[42,42] = 1
     filter_m[42,63] = 1
     filter_m[42,84] = 1
-
+    ##perform median filtering
     sm_img = median(expanded_img,filter_m)
+    ##trimming
     grid = sm_img[42:xsize+42,42:ysize+42]
     grid = img_as_float(grid)*(mx-mn) + mn
+    ##get the degridded image
     edija = 10**(image-grid)
     return edija
 
