@@ -4,6 +4,7 @@ channels:
   - defaults
 dependencies:
  - astropy
+ - cudnn
  - matplotlib
  - numpy
  - opencv
