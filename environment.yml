@@ -1,0 +1,17 @@
+name: sunimtf
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+ - astropy
+ - matplotlib
+ - numpy
+ - opencv
+ - pip
+ - python=3.9 
+ - reproject
+ - scikit-image
+ - scipy
+ - sunpy
+ - pip:
+   - tensorflow

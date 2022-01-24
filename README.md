@@ -11,4 +11,4 @@ Evaluated uncertainty on test set using model-ensemble is shown below-
 `pip install -r requirements.txt`
 
 ## using Conda
-`conda create --name <env_name> --file requirements.txt`
+`conda env create -f environment.yml`
