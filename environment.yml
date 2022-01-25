@@ -4,15 +4,15 @@ channels:
   - defaults
 dependencies:
  - astropy
- - cudnn
  - matplotlib
  - numpy
  - opencv
  - pip
- - python=3.9 
+ - python
  - reproject
  - scikit-image
  - scipy
  - sunpy
- - pip:
-   - tensorflow
+ - tensorflow=2.6
+ - tensorflow-gpu=2.6
+
