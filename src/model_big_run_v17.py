@@ -25,6 +25,9 @@ np.random.seed(seed_value)
 
 
 import os
+os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "0"
+
 fd_path = '/d1/fd/val/eit_171/'
 patch_path = '/d0/patches/val/'
 files_e = []
@@ -108,8 +111,7 @@ def imageLoader(file_path, batch_size,patch_num,fd_path):
 
 
 
-from keras.engine.topology import Layer
-from keras.engine import InputSpec
+from tensorflow.python.keras.layers import Layer, InputSpec
 
 class ReflectionPadding2D(Layer):
     def __init__(self, padding=(1, 1), **kwargs):
@@ -221,7 +223,7 @@ def combined_loss(y_true,y_pred):
 
 
 #sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
-adam = Adam(lr=0.0001,beta_1=0.5)
+adam = tf.keras.optimizers.Adam(lr=0.0001,beta_1=0.5)
 model.compile(optimizer=adam, loss = combined_loss, metrics=[combined_loss],run_eagerly=True)
 
 
