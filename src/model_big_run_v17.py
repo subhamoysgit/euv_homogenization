@@ -8,15 +8,11 @@ Created on Wed Jul 22 13:53:10 2020
 
 import tensorflow as tf
 import matplotlib.pyplot as plt
-import keras
 import numpy as np
 import os
 from keras import backend as K
-import cv2
-from keras.preprocessing.image import ImageDataGenerator
 import pickle
 from keras.callbacks import ModelCheckpoint
-from skimage import img_as_ubyte
 from keras.models import *
 from keras.layers import *
 from keras.optimizers import *
@@ -25,8 +21,6 @@ np.random.seed(seed_value)
 
 
 import os
-os.environ['TF_FORCE_GPU_ALLOW_GROWTH'] = 'true'
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "0"
 
 fd_path = '/d1/fd/val/eit_171/'
 patch_path = '/d0/patches/val/'
@@ -223,7 +217,7 @@ def combined_loss(y_true,y_pred):
 
 
 #sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
-adam = tf.keras.optimizers.Adam(lr=0.0001,beta_1=0.5)
+adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 model.compile(optimizer=adam, loss = combined_loss, metrics=[combined_loss],run_eagerly=True)
 
 
@@ -244,7 +238,7 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping#,LambdaCallback
 # redraw_callback = LambdaCallback(on_batch_end=cb_redraw)
 
 #model.load_weights("/d0/models/eit_aia_sr_big_v7.h5")
-checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_v17.h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', period=1)
+checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_v17.h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
 #early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
 history=model.fit(imageLoader(train_path, bs,patch_num,fd_path_trn), batch_size = 4*bs, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validation_data=imageLoader(val_path, bs,patch_num,fd_path_val), validation_steps = L1,initial_epoch=epoch-1)
 
