@@ -16,15 +16,20 @@ def reproject_eit_aia(file_e,file_a):
     from sunpy.map import Map
     import astropy.units as u
     from reproject import reproject_exact, reproject_interp
-    from degrid import degrid
     ####rescaled EIT map
     scale_factor = 4
     EITmap = Map(file_e)
     meta_e = EITmap.meta
-    EIT_degrid = degrid(file_e)
+    padX = [int(1024 - meta_e['crpix1']), int(meta_e['crpix1'])]
+    padY = [int(1024 - meta_e['crpix2']), int(meta_e['crpix2'])]
+    EIT_degrid = EITmap.data
+    imgP = np.pad(EIT_degrid/100, [padY, padX], 'constant')
+    imgR = ndimage.rotate(imgP, meta_e['sc_roll'], reshape=False)
+    imgC = imgR[padY[0] : -padY[1], padX[0] : -padX[1]]
+    EIT_degrid = imgC
     eit_lr = Map(EIT_degrid,EITmap.meta)
     eit_lr = eit_lr.rotate(recenter=True)
-    eit_s = eit_lr.data/(100*EITmap.meta['exptime'])
+    eit_s = eit_lr.data
     # Pad image, if necessary
     target_shape = int(4096)
     # Reform map to new size if original shape is too small
@@ -75,36 +80,9 @@ def reproject_eit_aia(file_e,file_a):
     rSun = np.sqrt(hpc_coords.Tx ** 2 + hpc_coords.Ty ** 2) / (EITmap.rsun_obs)
     maskEIT = rSun
     offset = 0
-    eit_d = EITmap.data.copy()/(100*EITmap.meta['exptime']) + offset
+    eit_d = EITmap.data.copy() + offset
     aia_d = eit_aia_map.data.copy()/(1000*AIA_map.meta['exptime']*f_aia)
     return eit_s,eit_d,maskEIT,aia_d
-
-#file_e = '/d1/' + 'fd/val/eit_171/' + 'efz20100803.130014.fits'
-#file_a = '/d1/' + 'fd/val/aia_171/' + 'aia_lev1_171a_2010_08_03t13_00_00_34z_image_lev1.fits.fits'
-
-####plot data
-#offset = -0.7
-#eit_d = 10*EITmap.data.copy()/(1000*EITmap.meta['exptime']) + offset
-
-#eit_d[eit_d<0]=0
-
-#eit_d[maskEIT>1]=np.nan
-
-#aia_d = AIA_map.data.copy()/(1000*AIA_map.meta['exptime'])
-#aia_d[aia_d<0]=0
-#aia_d[maskAIA>1]=np.nan
-#eit_aia_d = eit_aia_map.data.copy()/(1000*AIA_map.meta['exptime'])
-#eit_aia_d[eit_aia_d<0]=0
-#plt.figure(figsize=(30,10))
-#plt.subplot(131);plt.imshow(eit_d**0.5,cmap='magma',vmax=0.7);plt.title('scaled, interpolated EIT/171')
-#plt.subplot(132);plt.imshow(aia_d**0.5,cmap='magma',vmax=0.7);plt.title('AIA/171')
-#plt.subplot(133);plt.imshow(eit_aia_d**0.5,cmap='magma',vmax=0.7);plt.title('Reprojected AIA/171')
-#plt.show()
-
-
-
-
-
 
 
 

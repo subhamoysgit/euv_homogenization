@@ -5,7 +5,7 @@ Created on Wed Jul 22 13:53:10 2020
 
 @author: subhamoy
 """
-def degrid_new(path):
+def degrid(path):
     import numpy as np
     import cv2
     import sunpy.map
@@ -35,7 +35,7 @@ def degrid_new(path):
     expanded_img[xsize+42:,42:ysize+42]=np.flip(grid[xsize-42:,:],1)
     expanded_img[42:xsize+42,ysize+42:]=np.flip(grid[:,ysize-42:],0)
     expanded_img[42:xsize+42,0:42]=np.flip(grid[:,0:42],1)
-    
+    ##median filter mask    
     filter_m = np.zeros((85,85),dtype=np.int16)
     filter_m[0,42] = 1
     filter_m[21,42] = 1
@@ -47,10 +47,12 @@ def degrid_new(path):
     filter_m[42,42] = 1
     filter_m[42,63] = 1
     filter_m[42,84] = 1
-
+    ##perform median filtering
     sm_img = median(expanded_img,filter_m)
+    ##trimming
     grid = sm_img[42:xsize+42,42:ysize+42]
     grid = img_as_float(grid)*(mx-mn) + mn
+    ##get the degridded image
     edija = 10**(image-grid)
     return edija
 
