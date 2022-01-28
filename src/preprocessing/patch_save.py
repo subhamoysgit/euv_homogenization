@@ -13,12 +13,17 @@ import pickle
 
 import matplotlib.pyplot as plt
 
-_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
-_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
-sys.path.append(_SRC_DIR)
+#_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
+#_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
+#sys.path.append(_SRC_DIR)
+import sys
+# insert at 1, 0 is the script path (or '' in REPL)
+sys.path.insert(1, '/home/subhamoy/mycodes/euv_homogenization/src/utils')
 
+#import file
+#sys.path.append('../')
 from patch_generate import patch_generate
-from utils.reproject_eit_aia import reproject_eit_aia
+from reproject_eit_aia import reproject_eit_aia
 
 
 file_path = '/d1/fd/val/'
