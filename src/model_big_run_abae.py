@@ -124,8 +124,7 @@ n_ensemble = 10	# no. CNNs in ensemble
 reg = 'anc'		# type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
 
 # data options
-n_data = 4*(L + L1)*bs 	# no. training data points
-n_Xdim = 512 	# no. features for X
+n_data = 4*(L + L1)*bs 	# no. training + val data points
 seed_in = 0 # random seed used to produce data blobs - try changing to see how results look w different data
 
 
