@@ -77,24 +77,26 @@ model = Model(inputs = inputs, outputs = out)
 #sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
 adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 model.compile(optimizer=adam, loss = mean_squared_error, metrics=[mean_squared_error],run_eagerly=True)
-idx = 4 #layer index
 #### before training ###
-layer = model.layers[idx]
-
-weights = layer.get_weights()
-if weights:  ###for layers with weights
-	print(weights[0].shape)
-	plt.figure(figsize=(20,10))
-	plt.subplot(1,2,1)
-	plt.hist(weights[0].flatten(),bins = 20)
-	plt.title('before training : ' + layer.name)
+plt.figure(figsize=(10,5))
+plt.subplot(1,2,1)
+for layer in model.layers:
+	weights = layer.get_weights()
+	if weights:  ###for layers with weights
+		print(weights[0].shape)
+		plt.hist(weights[0].flatten(),bins = 20,alpha = 0.2,label=layer.name)
+		plt.yscale('log')
+plt.title('Before Training')
+plt.legend(frameon=False)	
 
 #### after training ###
 model.load_weights("/d0/models/eit_aia_sr_big_v17.h5")
-layer = model.layers[idx]
-weights = layer.get_weights()
-if weights:  ###for layers with weights
-	plt.subplot(1,2,2)
-	plt.hist(weights[0].flatten(),bins = 20)
-	plt.title('after training : ' + layer.name)
-	plt.show()
+plt.subplot(1,2,2)
+for layer in model.layers:
+	weights = layer.get_weights()
+	if weights:  ###for layers with weights
+		plt.hist(weights[0].flatten(),bins = 20,alpha = 0.2,label=layer.name)
+		plt.yscale('log')
+plt.title('After Training')
+plt.legend(frameon=False)	
+plt.show()
