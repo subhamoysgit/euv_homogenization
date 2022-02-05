@@ -22,7 +22,7 @@ from keras import initializers
 from tensorflow.python.keras.layers import Layer, InputSpec
 from keras.layers import PReLU
 from keras.callbacks import ModelCheckpoint #EarlyStopping,LambdaCallback
-
+import matplotlib.pyplot as plt
 seed_value = 5421
 rng = np.random.default_rng(seed_value)
 
@@ -77,10 +77,24 @@ model = Model(inputs = inputs, outputs = out)
 #sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
 adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 model.compile(optimizer=adam, loss = mean_squared_error, metrics=[mean_squared_error],run_eagerly=True)
-
-idx = 0
+idx = 4 #layer index
+#### before training ###
 layer = model.layers[idx]
-weights = layer.get_weights
-w = weights[0]
-print(w.shape)
 
+weights = layer.get_weights()
+if weights:  ###for layers with weights
+	print(weights[0].shape)
+	plt.figure(figsize=(20,10))
+	plt.subplot(1,2,1)
+	plt.hist(weights[0].flatten(),bins = 20)
+	plt.title('before training : ' + layer.name)
+
+#### after training ###
+model.load_weights("/d0/models/eit_aia_sr_big_v17.h5")
+layer = model.layers[idx]
+weights = layer.get_weights()
+if weights:  ###for layers with weights
+	plt.subplot(1,2,2)
+	plt.hist(weights[0].flatten(),bins = 20)
+	plt.title('after training : ' + layer.name)
+	plt.show()
