@@ -175,54 +175,16 @@ def combined_loss(y_true,y_pred):
 
 # CNN object
 def fn_make_CNN(reg='anc',features=32):
-  data_noise = 0.001
-##################initial layer###########################
-<<<<<<< HEAD
-  W_var_i = 1/(5*5*2)
-  W_lambda_i = data_noise/W_var_i
-  W_anc_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
-  W_init_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
-  b_var_i = W_var_i
-  b_lambda_i = data_noise/b_var_i
-  b_anc_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
-  b_init_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
-
-  # create custom regulariser
-  def custom_reg_W_i(weight_matrix):
-    if reg == 'reg':
-      return K.sum(K.square(weight_matrix)) * W_lambda_i/n_data
-    elif reg == 'free':
-      return 0.
-    elif reg == 'anc':
-      return K.sum(K.square(weight_matrix - W_anc_i)) * W_lambda_i/n_data
-
-  def custom_reg_b_i(weight_matrix):
-    if reg == 'reg':
-      return K.sum(K.square(weight_matrix)) * b_lambda_i/n_data
-    elif reg == 'free':
-      return 0.
-    elif reg == 'anc':
-      return K.sum(K.square(weight_matrix - b_anc_i)) * b_lambda_i/n_data
-
-
-################ middle layers ################## 
-  W_var_m = 1/(5*5*32)
-  W_lambda_m = data_noise/W_var_m
-  W_anc_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
-  W_init_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
-  b_var_m = W_var_m
-  b_lambda_m = data_noise/b_var_m
-  b_anc_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
-  b_init_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
-=======
-	W_var_i = 15/((64+2)*(64+2)*2)
-	W_lambda_i = 1/(2*W_var_i)
-	W_anc_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
-	W_init_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
+	data_noise = 0.001
+	##################initial layer###########################
+	W_var_i = 1/(5*5*2)
+	W_lambda_i = data_noise/W_var_i
+	W_anc_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
+	W_init_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
 	b_var_i = W_var_i
-	b_lambda_i = 1/(2*b_var_i)
-	b_anc_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
-	b_init_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
+	b_lambda_i = data_noise/b_var_i
+	b_anc_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
+	b_init_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
 
 	# create custom regulariser
 	def custom_reg_W_i(weight_matrix):
@@ -242,16 +204,15 @@ def fn_make_CNN(reg='anc',features=32):
 			return K.sum(K.square(weight_matrix - b_anc_i)) * b_lambda_i/n_data
 
 
-################ middle layers ################## 
-	W_var_m = 1/((64+2)*(64+2)*32)
-	W_lambda_m = 1/(2*W_var_m)
-	W_anc_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
-	W_init_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
+	################ middle layers ################## 
+	W_var_m = 1/(5*5*32)
+	W_lambda_m = data_noise/W_var_m
+	W_anc_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
+	W_init_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
 	b_var_m = W_var_m
-	b_lambda_m = 1/(2*b_var_m)
-	b_anc_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
-	b_init_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
->>>>>>> origin/abae
+	b_lambda_m = data_noise/b_var_m
+	b_anc_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
+	b_init_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
 # create custom regulariser
 	def custom_reg_W_m(weight_matrix):
 		if reg == 'reg':
@@ -270,25 +231,14 @@ def fn_make_CNN(reg='anc',features=32):
 			return K.sum(K.square(weight_matrix - b_anc_m)) * b_lambda_m/n_data
 
 ########### upsampling layer ##########################
-<<<<<<< HEAD
-  W_var_u = 1/(5*5*features)
-  W_lambda_u = data_noise/W_var_u
-  W_anc_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
-  W_init_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
-  b_var_u = W_var_u
-  b_lambda_u = data_noise/b_var_u
-  b_anc_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
-  b_init_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
-=======
-	W_var_u = 1/((4*64+2)*(4*64+2)*features)
-	W_lambda_u = 1/(2*W_var_u)
-	W_anc_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
-	W_init_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
+	W_var_u = 1/(5*5*features)
+	W_lambda_u = data_noise/W_var_u
+	W_anc_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
+	W_init_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
 	b_var_u = W_var_u
-	b_lambda_u = 1/(2*b_var_u)
-	b_anc_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
-	b_init_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
->>>>>>> origin/abae
+	b_lambda_u = data_noise/b_var_u
+	b_anc_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
+	b_init_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
 
 # create custom regulariser
 	def custom_reg_W_u(weight_matrix):
@@ -307,26 +257,15 @@ def fn_make_CNN(reg='anc',features=32):
 		elif reg == 'anc':
 			return K.sum(K.square(weight_matrix - b_anc_u)) * b_lambda_u/n_data
 
-######### final layer ###################################
-<<<<<<< HEAD
-  W_var_f = 1/(5*5*features)
-  W_lambda_f = data_noise/W_var_f
-  W_anc_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
-  W_init_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
-  b_var_f = W_var_f
-  b_lambda_f = data_noise/b_var_f
-  b_anc_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
-  b_init_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
-=======
-	W_var_f = 5/((4*64)*(4*64)*32)
-	W_lambda_f = 1/(2*W_var_f)
-	W_anc_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
-	W_init_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
+	######### final layer ###################################
+	W_var_f = 1/(5*5*features)
+	W_lambda_f = data_noise/W_var_f
+	W_anc_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
+	W_init_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
 	b_var_f = W_var_f
-	b_lambda_f = 1/(2*b_var_f)
-	b_anc_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
-	b_init_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
->>>>>>> origin/abae
+	b_lambda_f = data_noise/b_var_f
+	b_anc_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
+	b_init_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
 
 # create custom regulariser
 	def custom_reg_W_f(weight_matrix):
