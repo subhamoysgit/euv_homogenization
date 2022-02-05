@@ -9,6 +9,10 @@ def gradient_loss(y_true,y_pred):
 		Target image data
 	y_pred : tf.tensor
 		Predicted image data
+
+	Returns
+	-------
+		gradient loss term
 	"""
 
 	dx_true, dy_true = tf.image.image_gradients(y_true)
