@@ -175,9 +175,9 @@ def combined_loss(y_true,y_pred):
 
 # CNN object
 def fn_make_CNN(reg='anc',features=32):
-	data_noise = 0.001
+	data_noise = 0.1 ##noise variance as mean of aia patch hist
 	##################initial layer###########################
-	W_var_i = 1/(5*5*2)
+	W_var_i = 0.1 #1/(5*5*2)
 	W_lambda_i = data_noise/W_var_i
 	W_anc_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
 	W_init_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
@@ -205,7 +205,7 @@ def fn_make_CNN(reg='anc',features=32):
 
 
 	################ middle layers ################## 
-	W_var_m = 1/(5*5*32)
+	W_var_m = 0.1 #1/(5*5*32)
 	W_lambda_m = data_noise/W_var_m
 	W_anc_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
 	W_init_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
@@ -231,7 +231,7 @@ def fn_make_CNN(reg='anc',features=32):
 			return K.sum(K.square(weight_matrix - b_anc_m)) * b_lambda_m/n_data
 
 ########### upsampling layer ##########################
-	W_var_u = 1/(5*5*features)
+	W_var_u = 0.1 #1/(5*5*features)
 	W_lambda_u = data_noise/W_var_u
 	W_anc_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
 	W_init_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
@@ -258,7 +258,7 @@ def fn_make_CNN(reg='anc',features=32):
 			return K.sum(K.square(weight_matrix - b_anc_u)) * b_lambda_u/n_data
 
 	######### final layer ###################################
-	W_var_f = 1/(5*5*features)
+	W_var_f = 0.1 #1/(5*5*features)
 	W_lambda_f = data_noise/W_var_f
 	W_anc_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
 	W_init_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
@@ -334,7 +334,7 @@ print(CNNs[-1].summary())
 
 for m in range(n_ensemble):
 	print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --') 
-	checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
+	checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_"+reg+"abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
 	#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
 	history=CNNs[m].fit(imageLoader(train_path, bs,patch_num,fd_path_trn), batch_size = 4*bs, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validation_data=imageLoader(val_path, bs,patch_num,fd_path_val), validation_steps = L1,initial_epoch=epoch-1)
 
