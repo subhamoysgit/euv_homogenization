@@ -5,29 +5,29 @@ Created on Wed Jul 22 13:53:10 2020
 
 @author: subhamoy
 """
+from scipy import ndimage
+import csv
+import numpy as np
+from sunpy.map import Map
+import astropy.units as u
+from reproject import reproject_exact, reproject_interp
+from sunpy.coordinates import Helioprojective
 
 def reproject_eit_aia(file_e,file_a):
-    from scipy import ndimage
-    import csv
-    import tensorflow as tf
-    import numpy as np
-    import cv2
-    import sunpy.map
-    from sunpy.map import Map
-    import astropy.units as u
-    from reproject import reproject_exact, reproject_interp
+
     ####rescaled EIT map
     scale_factor = 4
     EITmap = Map(file_e)
     meta_e = EITmap.meta
     padX = [int(1024 - meta_e['crpix1']), int(meta_e['crpix1'])]
     padY = [int(1024 - meta_e['crpix2']), int(meta_e['crpix2'])]
-    EIT_degrid = EITmap.data
-    imgP = np.pad(EIT_degrid/100, [padY, padX], 'constant')
+
+    EIT_data = EITmap.data
+    imgP = np.pad(EIT_data/100, [padY, padX], 'constant')
     imgR = ndimage.rotate(imgP, meta_e['sc_roll'], reshape=False)
     imgC = imgR[padY[0] : -padY[1], padX[0] : -padX[1]]
-    EIT_degrid = imgC
-    eit_lr = Map(EIT_degrid,EITmap.meta)
+    EIT_data = imgC
+    eit_lr = Map(EIT_data,EITmap.meta)
     eit_lr = eit_lr.rotate(recenter=True)
     eit_s = eit_lr.data
     # Pad image, if necessary
@@ -41,7 +41,7 @@ def reproject_eit_aia(file_e,file_a):
     i1 = int(new_fov.shape[0] / 2 - EITmap.data.shape[0] / 2)
     i2 = int(new_fov.shape[0] / 2 + EITmap.data.shape[0] / 2)
     # Insert original image in new field of view
-    new_fov[i1:i2, i1:i2] = EIT_degrid[:,:] #EITmap.data[:, :]
+    new_fov[i1:i2, i1:i2] = EIT_data[:,:] #EITmap.data[:, :]
     # Assemble Sunpy map
     EITmap = Map(new_fov, new_meta)
     EITmap = EITmap.rotate(scale=scale_factor, recenter=True)
@@ -71,7 +71,8 @@ def reproject_eit_aia(file_e,file_a):
     AIA_map.meta['crpix1'] = AIA_map.meta['crpix1']-sz_x_diff
     AIA_map.meta['crpix2'] = AIA_map.meta['crpix2']-sz_y_diff
     AIA_map = Map(AIA_map.data[sz_x_diff:sz_x_diff+target_shape, sz_y_diff:sz_y_diff+target_shape].copy(), AIA_map.meta)
-    from sunpy.coordinates import Helioprojective
+
+
     with Helioprojective.assume_spherical_screen(AIA_map.observer_coordinate,only_off_disk=True):
       output, footprint = reproject_interp(AIA_map, EITmap.wcs, EITmap.data.shape)
     eit_aia_map = Map(output, EITmap.meta)
@@ -82,6 +83,7 @@ def reproject_eit_aia(file_e,file_a):
     offset = 0
     eit_d = EITmap.data.copy() + offset
     aia_d = eit_aia_map.data.copy()/(1000*AIA_map.meta['exptime']*f_aia)
+
     return eit_s,eit_d,maskEIT,aia_d
 
 
