@@ -1,15 +1,14 @@
 import os
-
-_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
-_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
-
+import sys
 import tensorflow as tf
 
-## Native
-from losses import term_gradient, term_histogram
+# Append source folder to system path
+_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
+_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
+sys.path.append(_SRC_DIR)
 
-def combined_loss(y_true,y_pred):
-	return tf.math.reduce_mean(tf.square(y_true-y_pred)) - 0.001*tf.image.ssim(y_true, y_pred, max_val=10.0)
+## Native Modules
+from losses import term_gradient, term_histogram
 
 
 def combined_loss(coef_ssim, coef_grad, coef_hist, dl = 0.1, normalization = 1000.0, noise_level = 20.0, lim = 3000.0):
