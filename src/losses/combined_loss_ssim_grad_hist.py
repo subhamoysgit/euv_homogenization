@@ -40,8 +40,8 @@ def combined_loss(coef_ssim, coef_grad, coef_hist, dl = 0.1, normalization = 100
 
 		return (tf.math.reduce_mean(tf.square(y_true-y_pred))
 				  + coef_ssim*tf.image.ssim(y_true, y_pred, max_val=10.0)
-				  + coef_grad*term_gradient.gradient_loss(y_true-y_pred)
-				  + coef_hist*term_histogram.histogram_loss(y_true,y_pred)
+				  + coef_grad*term_gradient.gradient_loss(y_true, y_pred)
+				  + coef_hist*term_histogram.histogram_loss(y_true, y_pred)
 				 )
 
 	return loss

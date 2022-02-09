@@ -5,7 +5,19 @@ Created on Wed Jul 22 13:53:10 2020
 
 @author: subhamoy
 """
+# System paths and GPU vs. CPU
 import os
+import sys
+
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+
+# Append source folder to system path.  It uses the folder where the experiment runs.
+# Since the template file is in 'src/templates' you only need to remove the last folder i.e. you only need '-1' in
+# os.path.abspath(__file__).split('/')[:-1].  If you make your folder structure deeper, be sure to increase this value.
+ 
+_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
+_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
+sys.path.append(_SRC_DIR)
 
 import numpy as np
 import sunpy.map
@@ -22,30 +34,30 @@ from tensorflow.python.keras.layers import Layer, InputSpec
 from keras.layers import PReLU
 from keras.callbacks import ModelCheckpoint #EarlyStopping,LambdaCallback
 
-seed_value = 5421
-rng = np.random.default_rng(seed_value)
+## Native losses
+from losses.combined_loss_ssim_grad_hist import combined_loss
+
+##------------------------------------------------------------------------------------
+## Constants that control the run
+SEED_VALUE = 5421
+rng = np.random.default_rng(SEED_VALUE)
+
+## Batches and Epochs
+PATCH_PATH = '/d0/patches/val/'
+
+## Loss term weigths
+COEF_SSIM = 1
+COEF_GRAD = 4
+COEF_HIST = 0.2
 
 
-fd_path = '/d1/fd/val/eit_171/'
-patch_path = '/d0/patches/val/'
-files_e = []
-for root,dirs,files in os.walk(fd_path):
-	for file in files:
-			files_e.append(file)
-
-
-file_list_eit = sorted(files_e)
-f = file_list_eit[100]
 patch_num = []
-for root,dirs,files in os.walk(patch_path):
+for root,dirs,files in os.walk(PATCH_PATH):
 	for file in files:
 			if file.startswith('eit') and file[4:12]==f[3:11]:
 				patches_e = pickle.load(open(root+file, "rb" ))
 				if np.sum(patches_e[:,:,1]<1)>=0:#.2*64*64:
 					patch_num.append(file[13:18])
-
-print(patch_num)
-
 
 
 def imageLoader(file_path, batch_size,patch_num,fd_path):
@@ -92,7 +104,7 @@ def imageLoader(file_path, batch_size,patch_num,fd_path):
 		yield(X,Y)
 
 
-bs = 10
+bs = 1
 train_path = '/d1/patches/trn/'
 val_path = '/d0/patches/val/'
 fd_path_trn = '/d1/fd/trn/eit_171/'
@@ -101,6 +113,13 @@ epoch = 1 #intial epoch
 L = 1536*(196 + 169)//bs 
 L1 = 451*(196 + 169)//bs
 
+# CNN options
+n_ensemble = 10	# no. CNNs in ensemble
+reg = 'anc'		# type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
+
+# data options
+n_data = 4*(L + L1)*bs 	# no. training + val data points
+seed_in = 0 # random seed used to produce data blobs - try changing to see how results look w different data
 
 class ReflectionPadding2D(Layer):
 	def __init__(self, padding=(1, 1), **kwargs):
@@ -117,59 +136,6 @@ class ReflectionPadding2D(Layer):
 		return tf.pad(x, [[0,0], [h_pad,h_pad], [w_pad,w_pad], [0,0] ], 'REFLECT')
 
 
-
-# CNN options
-n_ensemble = 10	# no. CNNs in ensemble
-reg = 'anc'		# type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
-
-# data options
-n_data = 4*(L + L1)*bs 	# no. training + val data points
-seed_in = 0 # random seed used to produce data blobs - try changing to see how results look w different data
-
-
-def histogramGen(x):
-	x = x*1000
-	patch_size = x.shape[2]
-	dl = 0.1
-	lim = 3000 
-	normalisation = 1 
-	noise_level = 20
-	lim = np.log10(lim)  # Maximum value
-
-	bins = np.round(np.power(10, np.arange(1, lim + dl, dl)), 2)
-	bins = bins - 10 + noise_level
-	# Defining centers and bin widths for the learnable histogram
-	centers = (bins[1:] + bins[0:-1]) / 2
-	widths = (bins[1:] - bins[0:-1])
-	nonzero = np.ones(centers.shape[0])
-	weight1 = nonzero[None, None, None,:]
-	bias1 = -centers * nonzero
-	diag = -nonzero / widths
-	weight2 = np.expand_dims(np.expand_dims(np.diag(diag), axis=0), axis=0)
-	bias2 = nonzero
-	conv = Conv2D(centers.shape[0], 1, weights= [weight1, bias1])(x)
-	conv = K.abs(conv)
-	conv = Conv2D(centers.shape[0], 1, weights= [weight2, bias2])(conv)
-	conv = Activation('relu')(conv)
-	hist = AveragePooling2D(pool_size=(patch_size, patch_size))(conv)
-	#print(patch_size)
-	return hist
-
-
-
-def grad_x(x):
-	dx, dy = tf.image.image_gradients(x)
-	return dx
-
-def grad_y(x):
-	dx, dy = tf.image.image_gradients(x)
-	return dy
-
-
-
-def combined_loss(y_true,y_pred):
-	return tf.math.reduce_mean(tf.square(y_true-y_pred)) - 0.001*tf.image.ssim(y_true, y_pred, max_val=10.0)
-	#return 0.2*tf.math.reduce_mean(tf.square(histogramGen(y_true)-histogramGen(y_pred))) + tf.math.reduce_mean(tf.square(y_true-y_pred)) - tf.image.ssim(y_true, y_pred, max_val=10.0)#+ 4*tf.math.reduce_mean(tf.square(grad_x(y_true) - grad_x(y_pred))) + 4*tf.math.reduce_mean(tf.square(grad_y(y_true) - grad_y(y_pred)))
 
 
 
@@ -320,22 +286,23 @@ def fn_make_CNN(reg='anc',features=32):
 
 	#sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
 	adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
-	model.compile(optimizer=adam, loss = combined_loss, metrics=[combined_loss],run_eagerly=True)
+	model.compile(optimizer=adam, loss = combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST), metrics=[combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST)],run_eagerly=True)
 	
 	return model
 
-# create the NNs
-CNNs=[]
-for m in range(n_ensemble):
-	CNNs.append(fn_make_CNN(reg=reg))
-print(CNNs[-1].summary())
 
 
-for m in range(n_ensemble):
-	print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --') 
-	checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-	#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
-	history=CNNs[m].fit(imageLoader(train_path, bs,patch_num,fd_path_trn), batch_size = 4*bs, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validation_data=imageLoader(val_path, bs,patch_num,fd_path_val), validation_steps = L1,initial_epoch=epoch-1)
+if __name__ == "__main__":
+
+	# create the NNs
+	CNNs=[]
+	for m in range(n_ensemble):
+		CNNs.append(fn_make_CNN(reg=reg))
+	print(CNNs[-1].summary())
 
 
-
+	for m in range(n_ensemble):
+		print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --') 
+		checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
+		#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
+		history=CNNs[m].fit(imageLoader(train_path, bs,patch_num,fd_path_trn), batch_size = 4*bs, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validation_data=imageLoader(val_path, bs,patch_num,fd_path_val), validation_steps = L1,initial_epoch=epoch-1)
