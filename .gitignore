@@ -6,3 +6,5 @@
 ## VScode settings
 launch.json
 settings.json
+
+__pycache__/
