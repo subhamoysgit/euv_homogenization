@@ -72,7 +72,7 @@ rng = np.random.default_rng(SEED_VALUE)
 from models.abae_high_resnet import fn_make_CNN
 
 # CNN options
-ENSEMBLE_SIZE = 10	# no. CNNs in ensemble
+ENSEMBLE_SIZE = 10			# no. CNNs in ensemble
 REGULARIZATION = 'anc'		# type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
 BATCH_SIZE = 1
 
@@ -114,21 +114,18 @@ if __name__ == "__main__":
 		for file in files:
 				if file.startswith('eit') and file[4:12]==f[3:11]:
 					patches_e = pickle.load(open(root+file, "rb" ))
-					if np.sum(patches_e[:,:,1]<1)>=0:#.2*64*64:
+					if np.sum(patches_e[:,:,1]<1)>=0:
 						patch_num.append(file[13:18])
 
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
 		CNNs.append(fn_make_CNN(reg=REGULARIZATION))
-			#sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
 		CNNs[m].compile(optimizer=adam, loss = loss, metrics=[loss],run_eagerly=True)
 
 	print(CNNs[-1].summary())
 
-
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
 		checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
 		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, FD_PATH_TRN, rng), batch_size = 4*BATCH_SIZE, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validatioN_DATA=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, FD_PATH_VAL, rng), validation_steps = L1,initial_epoch=epoch-1)
