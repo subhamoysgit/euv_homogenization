@@ -8,12 +8,9 @@ Created on Wed Jul 22 13:53:10 2020
 import os
 
 import numpy as np
-from sklearn.metrics import mean_squared_error
-import sunpy.map
 
 import tensorflow as tf
 from keras import backend as K
-import pickle
 from keras.callbacks import ModelCheckpoint
 from keras.models import *
 from keras.layers import *
@@ -74,9 +71,6 @@ conv = Encoder(inputs, features)
 out = Decoder(conv, features)
 model = Model(inputs = inputs, outputs = out)
 
-#sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
-adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
-model.compile(optimizer=adam, loss = mean_squared_error, metrics=[mean_squared_error],run_eagerly=True)
 #### before training ###
 plt.figure(figsize=(10,5))
 plt.subplot(1,2,1)
