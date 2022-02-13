@@ -332,7 +332,7 @@ for m in range(n_ensemble):
 print(CNNs[-1].summary())
 
 
-for m in range(n_ensemble):
+for m in range(1,n_ensemble):
 	print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --') 
 	checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_"+reg+"abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
 	#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
