@@ -179,12 +179,12 @@ def fn_make_CNN(reg='anc',features=32):
 	##################initial layer###########################
 	W_var_i = 0.1 #1/(5*5*2)
 	W_lambda_i = data_noise/W_var_i
-	W_anc_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
-	W_init_i = np.random.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
+	W_anc_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
+	W_init_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
 	b_var_i = W_var_i
 	b_lambda_i = data_noise/b_var_i
-	b_anc_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
-	b_init_i = np.random.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
+	b_anc_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
+	b_init_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
 
 	# create custom regulariser
 	def custom_reg_W_i(weight_matrix):
@@ -207,12 +207,12 @@ def fn_make_CNN(reg='anc',features=32):
 	################ middle layers ################## 
 	W_var_m = 0.1 #1/(5*5*32)
 	W_lambda_m = data_noise/W_var_m
-	W_anc_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
-	W_init_m = np.random.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
+	W_anc_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
+	W_init_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
 	b_var_m = W_var_m
 	b_lambda_m = data_noise/b_var_m
-	b_anc_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
-	b_init_m = np.random.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
+	b_anc_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
+	b_init_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
 # create custom regulariser
 	def custom_reg_W_m(weight_matrix):
 		if reg == 'reg':
@@ -233,12 +233,12 @@ def fn_make_CNN(reg='anc',features=32):
 ########### upsampling layer ##########################
 	W_var_u = 0.1 #1/(5*5*features)
 	W_lambda_u = data_noise/W_var_u
-	W_anc_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
-	W_init_u = np.random.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
+	W_anc_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
+	W_init_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
 	b_var_u = W_var_u
 	b_lambda_u = data_noise/b_var_u
-	b_anc_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
-	b_init_u = np.random.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
+	b_anc_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
+	b_init_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
 
 # create custom regulariser
 	def custom_reg_W_u(weight_matrix):
@@ -260,12 +260,12 @@ def fn_make_CNN(reg='anc',features=32):
 	######### final layer ###################################
 	W_var_f = 0.1 #1/(5*5*features)
 	W_lambda_f = data_noise/W_var_f
-	W_anc_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
-	W_init_f = np.random.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
+	W_anc_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
+	W_init_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
 	b_var_f = W_var_f
 	b_lambda_f = data_noise/b_var_f
-	b_anc_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
-	b_init_f = np.random.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
+	b_anc_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
+	b_init_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
 
 # create custom regulariser
 	def custom_reg_W_f(weight_matrix):
