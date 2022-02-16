@@ -330,10 +330,12 @@ CNNs=[]
 for m in range(n_ensemble):
 	CNNs.append(fn_make_CNN(reg=reg))
 print(CNNs[-1].summary())
+for i in range(0,n_ensemble):
+	print(CNNs[i].layers[2].get_weights()[0][0][0][0][:2])
 
-
-for m in range(1,n_ensemble):
-	print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --') 
+for m in range(3,n_ensemble):
+	print('-- training: ' + str(m+1) + ' of ' + str(n_ensemble) + ' CNNs --')
+	#CNNs[m].load_weights("/d0/models/eit_aia_sr_big_"+reg+"abae"+str(2).zfill(2)+".h5") 
 	checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_"+reg+"abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
 	#early_stopping = EarlyStopping(monitor='val_accuracy', min_delta=0, patience=5, verbose=1, mode='auto')#, baseline=None, restore_best_weights=True
 	history=CNNs[m].fit(imageLoader(train_path, bs,patch_num,fd_path_trn), batch_size = 4*bs, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validation_data=imageLoader(val_path, bs,patch_num,fd_path_val), validation_steps = L1,initial_epoch=epoch-1)
