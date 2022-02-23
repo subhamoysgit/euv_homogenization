@@ -8,7 +8,7 @@ def imageIndexer(patchPath, trainPath, valPath):
 	patch_num = []
 	for root,dirs,files in os.walk(patchPath):
 		for file in files:
-				if file.startswith('eit') and file[4:12]==f[3:11]:
+				if file.startswith('eit'):
 					patches_e = pickle.load(open(root+file, "rb" ))
 					if np.sum(patches_e[:,:,1]<1)>=0:
 						patch_num.append(file[13:18])
