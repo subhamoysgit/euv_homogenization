@@ -1,13 +1,29 @@
+import os
+import sys
+
 import numpy as np
 import tensorflow as tf
 from keras import backend as K
 from keras import initializers
+from keras.layers import *
+from keras.models import *
+
+# Append source folder to system path
+_MODEL_DIR = os.path.abspath(__file__).split('/')[:-1]
+_SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
+sys.path.append(_SRC_DIR)
+
+## Native Modules
+from models.layer_2D_reflection_padding import ReflectionPadding2D
 
 # CNN object
 def make_CNN(reg='anc',features=32, rng=None):
 
 	if rng is None:
 		rng = np.random.default_rng()
+
+	if optimizer is None:
+		optimizer =  tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 ##################initial layer###########################
 	W_var_i = 15/((64+2)*(64+2)*2)
@@ -151,9 +167,5 @@ def make_CNN(reg='anc',features=32, rng=None):
 	conv = Encoder(inputs, features)
 	out = Decoder(conv, features)
 	model = Model(inputs = inputs, outputs = out)
-
-	#sgd = SGD(lr=0.0001, momentum=0.9, nesterov=True)
-	adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
-	model.compile(optimizer=adam, loss = combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST), metrics=[combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST)],run_eagerly=True)
 	
 	return model
