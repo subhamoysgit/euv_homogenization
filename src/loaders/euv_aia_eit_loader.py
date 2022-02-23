@@ -2,7 +2,11 @@ import os
 import numpy as np
 
 
-def imageLoader(file_path, batch_size,patch_num,fd_path, rng):
+def imageLoader(file_path, batch_size, patch_num, rng=None):
+
+	if rng is None:
+		rng = np.random.default_rng()
+
 	files_e = []
 	files_d = []
 	for root,dirs,files in os.walk(fd_path):
