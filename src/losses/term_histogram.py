@@ -52,7 +52,7 @@ def differentiable_histogram(x, dl = 0.1, normalization = 1000.0, noise_level = 
 
 
 def histogram_loss(y_true,y_pred):
-	"""Calculate the Gradient magnitude loss
+	"""Calculate the histogram loss
 
 	Parameters
 	----------
