@@ -24,6 +24,7 @@ import numpy as np
 from keras.callbacks import ModelCheckpoint
 from keras.models import *
 from keras.layers import *
+from keras.layers import PReLU
 from keras.optimizers import *
 from keras.layers import PReLU
 from keras.callbacks import ModelCheckpoint
