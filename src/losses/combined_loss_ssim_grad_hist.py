@@ -8,7 +8,7 @@ _SRC_DIR = os.path.join('/',*_MODEL_DIR[:-1])
 sys.path.append(_SRC_DIR)
 
 ## Native Modules
-from losses import term_gradient, term_histogram
+from losses import term_gradient, term_histogram, term_mse
 
 
 def combined_loss(coef_ssim, coef_grad, coef_hist, dl = 0.1, normalization = 1000.0, noise_level = 20.0, lim = 3000.0):
@@ -38,7 +38,7 @@ def combined_loss(coef_ssim, coef_grad, coef_hist, dl = 0.1, normalization = 100
 
 	def loss(y_true, y_pred):
 
-		return (tf.math.reduce_mean(tf.square(y_true-y_pred))
+		return ( term_mse.mse_loss(y_true, y_pred)
 				  + coef_ssim*tf.image.ssim(y_true, y_pred, max_val=10.0)
 				  + coef_grad*term_gradient.gradient_loss(y_true, y_pred)
 				  + coef_hist*term_histogram.histogram_loss(y_true, y_pred)
