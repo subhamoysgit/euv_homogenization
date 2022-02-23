@@ -76,6 +76,11 @@ REGULARIZATION = 'anc'  # type of regularisation to use - anc (anchoring) reg (r
 BATCH_SIZE = 1  # Batch Size
 EPOCH0 = 1  # First epoch
 
+W_VAR_I = 1.0 # Standard deviation of the anchor weights
+W_LAMBDA_I = 0.5 # Strength of the regularization term for anchor weights
+B_VAR_I = 1.0 # Standard deviation of the anchor biases 
+B_LAMBDA_I = 0.5 # Strength of the regularization term for anchor biases
+
 
 ##------------------------------------------------------------------------------------
 ## Load loss and loss coefficients
@@ -99,13 +104,6 @@ VAL_PATH = '/d0/patches/val/'  # Validation data path
 VFLIP = True  # Vertical flip
 HFLIP = True  # Horizontal flip
 
-# L = 1536*(196 + 169)//BATCH_SIZE 
-# L1 = 451*(196 + 169)//BATCH_SIZE
-
-# # data options
-# N_DATA = 4*(L + L1)*BATCH_SIZE 	# no. training + val data points
-
-
 ##------------------------------------------------------------------------------------
 ## Optimizer
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
@@ -118,7 +116,7 @@ if __name__ == "__main__":
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
-		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng))
+		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_var_i=W_VAR_I, W_lambda_i=W_LAMBDA_I, b_var_i=B_VAR_I, b_lambda_i=B_LAMBDA_I))
 		CNNs[m].compile(optimizer=optimizer, loss = loss, metrics=[loss], run_eagerly=True)
 
 	print(CNNs[-1].summary())
@@ -126,4 +124,4 @@ if __name__ == "__main__":
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
 		checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validatioN_DATA=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, rng=rng), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, rng=rng), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)

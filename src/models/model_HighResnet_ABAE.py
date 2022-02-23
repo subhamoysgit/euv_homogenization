@@ -17,121 +17,149 @@ sys.path.append(_SRC_DIR)
 from models.layer_2D_reflection_padding import ReflectionPadding2D
 
 # CNN object
-def make_CNN(reg='anc',features=32, rng=None):
+def make_CNN(reg='anc',
+             features=32, 
+			 rng=None, 
+			 W_var_i=1.0, 
+			 W_lambda_i=0.5, 
+			 b_var_i=1.0, 
+			 b_lambda_i=0.5,
+			 W_var_m=None, 
+			 W_lambda_m=None, 
+			 b_var_m=None, 
+			 b_lambda_m=None,
+			 W_var_u=None, 
+			 W_lambda_u=None, 
+			 b_var_u=None, 
+			 b_lambda_u=None,
+			 W_var_f=None, 
+			 W_lambda_f=None, 
+			 b_var_f=None, 
+			 b_lambda_f=None):
 
 	if rng is None:
 		rng = np.random.default_rng()
 
-	if optimizer is None:
-		optimizer =  tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
+	# Default all regularizer weights to fist one, if not provided
+	if W_var_m is None:
+		W_var_m = W_var_i
+	if W_lambda_m is None:
+		W_lambda_m = W_lambda_i
+	if b_var_m is None:
+		b_var_m = b_var_i
+	if b_lambda_m is None:
+		b_lambda_m = b_lambda_i
+
+	if W_var_u is None:
+		W_var_u = W_var_i
+	if W_lambda_u is None:
+		W_lambda_u = W_lambda_i
+	if b_var_u is None:
+		b_var_u = b_var_i
+	if b_lambda_u is None:
+		b_lambda_u = b_lambda_i
+
+	if W_var_f is None:
+		W_var_f = W_var_i
+	if W_lambda_f is None:
+		W_lambda_f = W_lambda_i
+	if b_var_f is None:
+		b_var_f = b_var_i
+	if b_lambda_f is None:
+		b_lambda_f = b_lambda_i
 
 ##################initial layer###########################
-	W_var_i = 15/((64+2)*(64+2)*2)
-	W_lambda_i = 1/(2*W_var_i)
+
 	W_anc_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
 	W_init_i = rng.normal(loc=0,scale=np.sqrt(W_var_i),size=[5,5,2,features])
-	b_var_i = W_var_i
-	b_lambda_i = 1/(2*b_var_i)
 	b_anc_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
 	b_init_i = rng.normal(loc=0,scale=np.sqrt(b_var_i),size=[features])
 
 	# create custom regulariser
 	def custom_reg_W_i(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * W_lambda_i/n_data
+			return K.sum(K.square(weight_matrix)) * W_lambda_i
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - W_anc_i)) * W_lambda_i/n_data
+			return K.sum(K.square(weight_matrix - W_anc_i)) * W_lambda_i
 
 	def custom_reg_b_i(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * b_lambda_i/n_data
+			return K.sum(K.square(weight_matrix)) * b_lambda_i
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - b_anc_i)) * b_lambda_i/n_data
+			return K.sum(K.square(weight_matrix - b_anc_i)) * b_lambda_i
 
 
 ################ middle layers ################## 
-	W_var_m = 1/((64+2)*(64+2)*32)
-	W_lambda_m = 1/(2*W_var_m)
 	W_anc_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
 	W_init_m = rng.normal(loc=0,scale=np.sqrt(W_var_m),size=[5,5,features,features])
-	b_var_m = W_var_m
-	b_lambda_m = 1/(2*b_var_m)
 	b_anc_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
 	b_init_m = rng.normal(loc=0,scale=np.sqrt(b_var_m),size=[features])
 # create custom regulariser
 	def custom_reg_W_m(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * W_lambda_m/n_data
+			return K.sum(K.square(weight_matrix)) * W_lambda_m
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - W_anc_m)) * W_lambda_m/n_data
+			return K.sum(K.square(weight_matrix - W_anc_m)) * W_lambda_m
 
 	def custom_reg_b_m(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * b_lambda_m/n_data
+			return K.sum(K.square(weight_matrix)) * b_lambda_m
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - b_anc_m)) * b_lambda_m/n_data
+			return K.sum(K.square(weight_matrix - b_anc_m)) * b_lambda_m
 
 ########### upsampling layer ##########################
-	W_var_u = 1/((4*64+2)*(4*64+2)*features)
-	W_lambda_u = 1/(2*W_var_u)
 	W_anc_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
 	W_init_u = rng.normal(loc=0,scale=np.sqrt(W_var_u),size=[5,5,features,features])
-	b_var_u = W_var_u
-	b_lambda_u = 1/(2*b_var_u)
 	b_anc_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
 	b_init_u = rng.normal(loc=0,scale=np.sqrt(b_var_u),size=[features])
 
 # create custom regulariser
 	def custom_reg_W_u(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * W_lambda_u/n_data
+			return K.sum(K.square(weight_matrix)) * W_lambda_u
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - W_anc_u)) * W_lambda_u/n_data
+			return K.sum(K.square(weight_matrix - W_anc_u)) * W_lambda_u
 
 	def custom_reg_b_u(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * b_lambda_u/n_data
+			return K.sum(K.square(weight_matrix)) * b_lambda_u
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - b_anc_u)) * b_lambda_u/n_data
+			return K.sum(K.square(weight_matrix - b_anc_u)) * b_lambda_u
 
 ######### final layer ###################################
-	W_var_f = 5/((4*64)*(4*64)*32)
-	W_lambda_f = 1/(2*W_var_f)
 	W_anc_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
 	W_init_f = rng.normal(loc=0,scale=np.sqrt(W_var_f),size=[1,1,features,1])
-	b_var_f = W_var_f
-	b_lambda_f = 1/(2*b_var_f)
 	b_anc_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
 	b_init_f = rng.normal(loc=0,scale=np.sqrt(b_var_f),size=[1])
 
 # create custom regulariser
 	def custom_reg_W_f(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * W_lambda_f/n_data
+			return K.sum(K.square(weight_matrix)) * W_lambda_f
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - W_anc_f)) * W_lambda_f/n_data
+			return K.sum(K.square(weight_matrix - W_anc_f)) * W_lambda_f
 
 	def custom_reg_b_f(weight_matrix):
 		if reg == 'reg':
-			return K.sum(K.square(weight_matrix)) * b_lambda_f/n_data
+			return K.sum(K.square(weight_matrix)) * b_lambda_f
 		elif reg == 'free':
 			return 0.
 		elif reg == 'anc':
-			return K.sum(K.square(weight_matrix - b_anc_f)) * b_lambda_f/n_data
+			return K.sum(K.square(weight_matrix - b_anc_f)) * b_lambda_f
 
 
 
