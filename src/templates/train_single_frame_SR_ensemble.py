@@ -56,25 +56,25 @@ sys.path.append(_SRC_DIR)
 
 # Load modules
 import numpy as np
-import pickle
 import tensorflow as tf
 from keras.callbacks import ModelCheckpoint
 
 
 ##------------------------------------------------------------------------------------
 ## Random seed initialization
-SEED_VALUE = 5421
+SEED_VALUE = 42
 rng = np.random.default_rng(SEED_VALUE)
 
 
 ##------------------------------------------------------------------------------------
 ## Load CNN model and CNN coefficients
-from models.abae_high_resnet import fn_make_CNN
+from models.model_HighResnet_ABAE import make_CNN
 
 # CNN options
-ENSEMBLE_SIZE = 10			# no. CNNs in ensemble
-REGULARIZATION = 'anc'		# type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
-BATCH_SIZE = 1
+ENSEMBLE_SIZE = 10  # no. CNNs in ensemble
+REGULARIZATION = 'anc'  # type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
+BATCH_SIZE = 1  # Batch Size
+EPOCH0 = 1  # First epoch
 
 
 ##------------------------------------------------------------------------------------
@@ -88,44 +88,42 @@ COEF_HIST = 0.2  # Strength of histogram term
 loss = combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST)
 
 ##------------------------------------------------------------------------------------
-## Patch location and data loader
-from loaders.euv_aia_eit_loader import imageLoader
+## Patch location, data loader, and augmentation
+from data_loaders.eit_aia_loader import imageIndexer, imageLoader
 
-PATCH_PATH = '/d0/patches/val/'
-TRAIN_PATH = '/d1/patches/trn/'
-VAL_PATH = '/d0/patches/val/'
+PATCH_PATH = '/d0/patches/val/'  # Patch location
+TRAIN_PATH = '/d1/patches/trn/'  # Training data path
+VAL_PATH = '/d0/patches/val/'  # Validation data path
 
-L = 1536*(196 + 169)//BATCH_SIZE 
-L1 = 451*(196 + 169)//BATCH_SIZE
+# Augmentation
+VFLIP = True  # Vertical flip
+HFLIP = True  # Horizontal flip
 
-# data options
-N_DATA = 4*(L + L1)*BATCH_SIZE 	# no. training + val data points
+# L = 1536*(196 + 169)//BATCH_SIZE 
+# L1 = 451*(196 + 169)//BATCH_SIZE
+
+# # data options
+# N_DATA = 4*(L + L1)*BATCH_SIZE 	# no. training + val data points
 
 
 ##------------------------------------------------------------------------------------
 ## Optimizer
-adam = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
+optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 if __name__ == "__main__":
 
-	patch_num = []
-	for root,dirs,files in os.walk(PATCH_PATH):
-		for file in files:
-				if file.startswith('eit') and file[4:12]==f[3:11]:
-					patches_e = pickle.load(open(root+file, "rb" ))
-					if np.sum(patches_e[:,:,1]<1)>=0:
-						patch_num.append(file[13:18])
+	patch_num, nTrain, nVal = imageIndexer(PATCH_PATH, TRAIN_PATH, VAL_PATH)
 
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
-		CNNs.append(fn_make_CNN(reg=REGULARIZATION))
-		CNNs[m].compile(optimizer=adam, loss = loss, metrics=[loss],run_eagerly=True)
+		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng))
+		CNNs[m].compile(optimizer=optimizer, loss = loss, metrics=[loss], run_eagerly=True)
 
 	print(CNNs[-1].summary())
 
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
 		checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, FD_PATH_TRN, rng), batch_size = 4*BATCH_SIZE, steps_per_epoch = L, epochs = 10,callbacks=[checkpoint], validatioN_DATA=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, FD_PATH_VAL, rng), validation_steps = L1,initial_epoch=epoch-1)
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validatioN_DATA=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, rng=rng), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
