@@ -1,6 +1,6 @@
 import tensorflow as tf
 
-def mse_loss(y_true,,y_pred):
+def mse_loss(y_true, y_pred):
 	"""Calculate the mse loss
 
 	Parameters
