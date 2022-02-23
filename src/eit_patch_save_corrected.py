@@ -70,24 +70,37 @@ print(len(patches_val))
 print(patches_trn[0][20:28])
 print(patches_val[0][20:28])
 
-for i in range(len(patches_trn)):
-	print(i)
-	#eit = pickle.load(open(patches_trn[i], "rb" ))
-	#print(np.max(eit[:,:,0]))
-	#print(list(df1['date']))
-	eit = eit_patch_corrector(patches_trn[i],df1)
-	print(np.max(eit[:,:,0]))
-	pickle.dump(eit,open(patches_trn[i],'wb'))
-	#idx = list(df1['date']).index(int(patches_trn[i][20:28]))
-    # print(idx)
-	#print(df1['exptime'][idx]) 
+# for i in range(len(patches_trn)):
+# 	print(i)
+# 	#eit = pickle.load(open(patches_trn[i], "rb" ))
+# 	#print(np.max(eit[:,:,0]))
+# 	#print(list(df1['date']))
+# 	eit = eit_patch_corrector(patches_trn[i],df1)
+# 	print(np.max(eit[:,:,0]))
+# 	pickle.dump(eit,open(patches_trn[i],'wb'))
+# 	#idx = list(df1['date']).index(int(patches_trn[i][20:28]))
+#     # print(idx)
+# 	#print(df1['exptime'][idx]) 
 
 
-for i in range(len(patches_val)):
+# for i in range(len(patches_val)):
+# 	print(i)
+# 	#eit = pickle.load(open(patches_trn[i], "rb" ))
+# 	#print(np.max(eit[:,:,0]))
+# 	#print(list(df1['date']))
+# 	eit = eit_patch_corrector(patches_val[i],df2)
+# 	print(np.max(eit[:,:,0]))
+# 	pickle.dump(eit,open(patches_val[i],'wb'))
+
+for i in range(100):
 	print(i)
-	#eit = pickle.load(open(patches_trn[i], "rb" ))
-	#print(np.max(eit[:,:,0]))
-	#print(list(df1['date']))
-	eit = eit_patch_corrector(patches_val[i],df2)
+	eit = pickle.load(open(patches_trn[i], "rb" ))
 	print(np.max(eit[:,:,0]))
-	pickle.dump(eit,open(patches_val[i],'wb'))
+	#print(list(df1['date']))
+
+import matplotlib.pyplot as plt
+plt.subplot(1,2,1)
+plt.imshow(eit[:,:,0])
+plt.subplot(1,2,2)
+plt.imshow(eit[:,:,1])
+plt.show()
