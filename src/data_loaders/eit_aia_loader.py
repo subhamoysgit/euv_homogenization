@@ -2,8 +2,9 @@ import os
 import pickle
 import numpy as np
 
-def imageIndexer(patchPath):
+def imageIndexer(patchPath, trainPath, valPath):
 
+	# Index batches
 	patch_num = []
 	for root,dirs,files in os.walk(patchPath):
 		for file in files:
@@ -12,7 +13,23 @@ def imageIndexer(patchPath):
 					if np.sum(patches_e[:,:,1]<1)>=0:
 						patch_num.append(file[13:18])
 
-	return patch_num
+	# Find number of training batches
+	file_list = []
+	for root,dirs,files in os.walk(trainPath):
+		for file in files:
+			if file[:3]=='eit' and file[13:18] in patch_num:
+				file_list.append(root+file)
+	nTrain = len(file_list)
+
+	# Find number of tvalidation batches
+	file_list = []
+	for root,dirs,files in os.walk(valPath):
+		for file in files:
+			if file[:3]=='eit' and file[13:18] in patch_num:
+				file_list.append(root+file)
+	nVal = len(file_list)							
+
+	return patch_num, nTrain, nVal
 
 
 def imageLoader(file_path, batch_size, patch_num, rng=None, vflip=False, hflip=False):
@@ -27,7 +44,6 @@ def imageLoader(file_path, batch_size, patch_num, rng=None, vflip=False, hflip=F
 		nAugmentations += 1
 	if vflip:
 		nAugmentations += 1
-
 
 	file_list = []
 	for root,dirs,files in os.walk(file_path):
