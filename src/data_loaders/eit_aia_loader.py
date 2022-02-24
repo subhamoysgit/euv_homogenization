@@ -2,14 +2,18 @@ import os
 import pickle
 import numpy as np
 
-def imageIndexer(trainPath, valPath):
+def imageIndexer(trainPath, valPath, trainDateRange = None, valDateRange = None):
 
 	# Find number of training batches
 	file_list = []
 	for root,dirs,files in os.walk(trainPath):
 		for file in files:
 			if file[:3]=='eit':
-				file_list.append(root+file)
+				if trainDateRange:
+					if int(file[4:12])>=trainDateRange[0] and int(file[4:12])<=trainDateRange[1]:
+						file_list.append(root+file)
+				else:
+					file_list.append(root+file)
 	nTrain = len(file_list)
 
 	# Find number of tvalidation batches
@@ -17,14 +21,18 @@ def imageIndexer(trainPath, valPath):
 	for root,dirs,files in os.walk(valPath):
 		for file in files:
 			if file[:3]=='eit':
-				file_list.append(root+file)
+				if valDateRange:
+					if int(file[4:12])>=valDateRange[0] and int(file[4:12])<=valDateRange[1]:
+						file_list.append(root+file)
+				else:
+					file_list.append(root+file)
 	nVal = len(file_list)							
 
 	return nTrain, nVal
 
 
-def imageLoader(file_path, batch_size, rng=None, vflip=False, hflip=False):
-
+def imageLoader(file_path, batch_size, DateRange = False, rng=None, vflip=False, hflip=False):
+    # DateRange if not False should be an integer list [DateInitial, DateFinal] in YYYYMMDD format
 	# Initialize random generator if not passed
 	if rng is None:
 		rng = np.random.default_rng()
@@ -33,7 +41,11 @@ def imageLoader(file_path, batch_size, rng=None, vflip=False, hflip=False):
 	for root,dirs,files in os.walk(file_path):
 		for file in files:
 			if file[:3]=='eit':
-				file_list.append(root+file)
+				if DateRange:
+					if int(file[4:12])>=DateRange[0] and int(file[4:12])<=DateRange[1]:
+						file_list.append(root+file)
+				else:
+					file_list.append(root+file)
 	file_list = file_list[:batch_size*(len(file_list)//batch_size)]
 
 	rng.shuffle(file_list)
