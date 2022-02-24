@@ -51,7 +51,7 @@ def differentiable_histogram(x, dl = 0.1, normalization = 1000.0, noise_level = 
 	return hist
 
 
-def histogram_loss(y_true,y_pred):
+def histogram_loss(y_true,y_pred, dl = 0.1, normalization = 1000.0, noise_level = 20.0, lim = 3000.0):
 	"""Calculate the histogram loss
 
 	Parameters
@@ -66,4 +66,4 @@ def histogram_loss(y_true,y_pred):
 		histogram loss term
 	"""
 
-	return tf.math.reduce_mean(tf.square(differentiable_histogram(y_true)-differentiable_histogram(y_pred)))
+	return tf.math.reduce_mean(tf.square(differentiable_histogram(y_true, dl=dl, normalization=normalization, noise_level=noise_level, lim=lim)-differentiable_histogram(y_pred, dl=dl, normalization=normalization, noise_level=noise_level, lim=lim)))

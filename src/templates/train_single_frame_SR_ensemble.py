@@ -96,7 +96,6 @@ loss = combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST)
 ## Patch location, data loader, and augmentation
 from data_loaders.eit_aia_loader import imageIndexer, imageLoader
 
-PATCH_PATH = '/d0/patches/val/'  # Patch location
 TRAIN_PATH = '/d1/patches/trn/'  # Training data path
 VAL_PATH = '/d0/patches/val/'  # Validation data path
 
@@ -114,7 +113,7 @@ OUTPUT_FILE = 'eit_aia_sr_big_abae'
 
 if __name__ == "__main__":
 
-	nTrain, nVal = imageIndexer(PATCH_PATH, TRAIN_PATH, VAL_PATH)
+	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH)
 
 	# create the NNs
 	CNNs=[]
