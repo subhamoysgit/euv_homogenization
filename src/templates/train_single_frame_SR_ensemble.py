@@ -43,7 +43,7 @@ Is this your best model to date?
 import os
 import sys
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
+# os.environ['CUDA_VISIBLE_DEVICES'] = '-1'
 
 # Append source folder to system path.  It uses the folder where the experiment runs.
 # Since the template file is in 'src/templates' you only need to remove the last folder i.e. you only need '-1' in
@@ -109,9 +109,12 @@ HFLIP = True  # Horizontal flip
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
+OUTPUT_FOLDER = '/d0/models/'
+OUTPUT_FILE = 'eit_aia_sr_big_abae'
+
 if __name__ == "__main__":
 
-	patch_num, nTrain, nVal = imageIndexer(PATCH_PATH, TRAIN_PATH, VAL_PATH)
+	nTrain, nVal = imageIndexer(PATCH_PATH, TRAIN_PATH, VAL_PATH)
 
 	# create the NNs
 	CNNs=[]
@@ -123,5 +126,5 @@ if __name__ == "__main__":
 
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
-		checkpoint = ModelCheckpoint("/d0/models/eit_aia_sr_big_abae"+str(m+1).zfill(2)+".h5", monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, patch_num, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, patch_num, rng=rng), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
+		checkpoint = ModelCheckpoint(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) + '.h5', monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
