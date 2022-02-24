@@ -94,7 +94,7 @@ B_LAMBDA_I = DATA_NOISE/B_VAR_I # Strength of the regularization term for anchor
 from data_loaders.eit_aia_loader import imageIndexer, imageLoader
 
 TRAIN_PATH = '/d1/patches/trn/'  # Training data path
-VAL_PATH = '/d0/patches/val/'  # Validation data path
+VAL_PATH = '/d1/patches/trn/'  # Validation data path
 
 
 # Augmentation
@@ -109,12 +109,13 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 OUTPUT_FOLDER = '/d0/models/'
 OUTPUT_FILE = 'eit_aia_sr_abae_small_'
 TRAIN_DATE_RANGE = [20140101,20141231]
-VAL_DATE_RANGE = [20151001,20151231]
+VAL_DATE_RANGE = [20160101,20160229]
 
 if __name__ == "__main__":
 
 	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH, trainDateRange = TRAIN_DATE_RANGE, valDateRange = VAL_DATE_RANGE)
-
+	print(nTrain)
+	print(nVal)
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
