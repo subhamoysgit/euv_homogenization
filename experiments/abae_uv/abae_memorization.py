@@ -79,7 +79,7 @@ from models.model_HighResnet_ABAE import make_CNN
 # CNN options
 ENSEMBLE_SIZE = 10  # no. CNNs in ensemble
 REGULARIZATION = 'anc'  # type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
-BATCH_SIZE = 1  # Batch Size
+BATCH_SIZE = 10  # Batch Size
 EPOCH0 = 1  # First epoch
 
 W_VAR_I = 1.0 # Standard deviation of the anchor weights
@@ -95,6 +95,7 @@ from data_loaders.eit_aia_loader import imageIndexer, imageLoader
 TRAIN_PATH = '/d1/patches/trn/'  # Training data path
 VAL_PATH = '/d0/patches/val/'  # Validation data path
 
+
 # Augmentation
 VFLIP = True  # Vertical flip
 HFLIP = True  # Horizontal flip
@@ -105,11 +106,13 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_big_abae'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_'
+TRAIN_DATE_RANGE = [20140101,20141231]
+VAL_DATE_RANGE = [20151001,20151231]
 
 if __name__ == "__main__":
 
-	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH)
+	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH, trainDateRange = TRAIN_DATE_RANGE, valDateRange = VAL_DATE_RANGE)
 
 	# create the NNs
 	CNNs=[]
@@ -122,4 +125,4 @@ if __name__ == "__main__":
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
 		checkpoint = ModelCheckpoint(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) + '.h5', monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, DateRange = TRAIN_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, DateRange = VAL_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
