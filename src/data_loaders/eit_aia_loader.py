@@ -49,6 +49,7 @@ def imageLoader(file_path, batch_size, rng=None, vflip=False, hflip=False):
 			eit = pickle.load(open(file_list[k*batch_size+i], "rb" ))
 			aia = pickle.load(open(file_list[k*batch_size+i][:16]+'aia'+file_list[k*batch_size+i][19:], "rb" ))
 			prof = eit[:,:,1]
+			X[i,:,:,0] = eit[:,:,0]
 			X[i,:,:,1] = prof[:,:]
 			Y[i,:,:,0] = aia[:,:]
 
