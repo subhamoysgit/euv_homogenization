@@ -84,13 +84,11 @@ B_LAMBDA_I = 0.5 # Strength of the regularization term for anchor biases
 
 ##------------------------------------------------------------------------------------
 ## Load loss and loss coefficients
-from losses.combined_loss_ssim_grad_hist import combined_loss
+from losses.combined_loss_ssim import combined_loss
 
-COEF_SSIM = 1  # Strength of SSIM term
-COEF_GRAD = 4  # Strength of gradient term
-COEF_HIST = 0.2  # Strength of histogram term
+COEF_SSIM = -1  # Strength of SSIM term
 
-loss = combined_loss(COEF_SSIM, COEF_GRAD, COEF_HIST)
+loss = combined_loss(COEF_SSIM)
 
 ##------------------------------------------------------------------------------------
 ## Patch location, data loader, and augmentation
