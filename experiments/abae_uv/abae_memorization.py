@@ -82,10 +82,11 @@ REGULARIZATION = 'anc'  # type of regularisation to use - anc (anchoring) reg (r
 BATCH_SIZE = 10  # Batch Size
 EPOCH0 = 1  # First epoch
 
-W_VAR_I = 1.0 # Standard deviation of the anchor weights
-W_LAMBDA_I = 0.5 # Strength of the regularization term for anchor weights
-B_VAR_I = 1.0 # Standard deviation of the anchor biases 
-B_LAMBDA_I = 0.5 # Strength of the regularization term for anchor biases
+DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
+W_VAR_I = 0.1 # variance of the anchor weights
+W_LAMBDA_I = DATA_NOISE/W_VAR_I # Strength of the regularization term for anchor weights
+B_VAR_I = W_VAR_I # variance of the anchor biases 
+B_LAMBDA_I = DATA_NOISE/B_VAR_I # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
