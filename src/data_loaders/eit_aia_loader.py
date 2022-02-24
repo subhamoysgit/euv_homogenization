@@ -2,22 +2,13 @@ import os
 import pickle
 import numpy as np
 
-def imageIndexer(patchPath, trainPath, valPath):
-
-	# Index batches
-	patch_num = []
-	for root,dirs,files in os.walk(patchPath):
-		for file in files:
-				if file.startswith('eit'):
-					patches_e = pickle.load(open(root+file, "rb" ))
-					if np.sum(patches_e[:,:,1]<1)>=0:
-						patch_num.append(file[13:18])
+def imageIndexer(trainPath, valPath):
 
 	# Find number of training batches
 	file_list = []
 	for root,dirs,files in os.walk(trainPath):
 		for file in files:
-			if file[:3]=='eit' and file[13:18] in patch_num:
+			if file[:3]=='eit':
 				file_list.append(root+file)
 	nTrain = len(file_list)
 
@@ -25,30 +16,23 @@ def imageIndexer(patchPath, trainPath, valPath):
 	file_list = []
 	for root,dirs,files in os.walk(valPath):
 		for file in files:
-			if file[:3]=='eit' and file[13:18] in patch_num:
+			if file[:3]=='eit':
 				file_list.append(root+file)
 	nVal = len(file_list)							
 
-	return patch_num, nTrain, nVal
+	return nTrain, nVal
 
 
-def imageLoader(file_path, batch_size, patch_num, rng=None, vflip=False, hflip=False):
+def imageLoader(file_path, batch_size, rng=None, vflip=False, hflip=False):
 
 	# Initialize random generator if not passed
 	if rng is None:
 		rng = np.random.default_rng()
 
-	# Add the number of augmentations used
-	nAugmentations = 0
-	if hflip:
-		nAugmentations += 1
-	if vflip:
-		nAugmentations += 1
-
 	file_list = []
 	for root,dirs,files in os.walk(file_path):
 		for file in files:
-			if file[:3]=='eit' and file[13:18] in patch_num:
+			if file[:3]=='eit':
 				file_list.append(root+file)
 	file_list = file_list[:batch_size*(len(file_list)//batch_size)]
 
@@ -56,8 +40,8 @@ def imageLoader(file_path, batch_size, patch_num, rng=None, vflip=False, hflip=F
 
 	k = 0
 	num = len(file_list)//batch_size
-	X = np.zeros(((2**nAugmentations)*batch_size,64,64,2),dtype=float)
-	Y = np.zeros(((2**nAugmentations)*batch_size,256,256,1),dtype=float)
+	X = np.zeros(((2**(hflip+vflip))*batch_size,64,64,2),dtype=float)
+	Y = np.zeros(((2**(hflip+vflip))*batch_size,256,256,1),dtype=float)
 
 	while True:
 		k = k % num
