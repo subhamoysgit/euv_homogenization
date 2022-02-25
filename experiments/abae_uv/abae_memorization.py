@@ -126,5 +126,5 @@ if __name__ == "__main__":
 
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
-		checkpoint = ModelCheckpoint(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) + '.h5', monitor='val_combined_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, DateRange = TRAIN_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, DateRange = VAL_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
+		checkpoint = ModelCheckpoint(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) + '.h5', monitor='val_loss', verbose=1, save_best_only=True, save_weights_only=True, mode='auto', save_freq='epoch')
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, DateRange = TRAIN_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 5, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, DateRange = VAL_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
