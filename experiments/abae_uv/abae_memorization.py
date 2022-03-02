@@ -83,7 +83,7 @@ BATCH_SIZE = 10  # Batch Size
 EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
-W_VAR_I = 0.1 # variance of the anchor weights
+W_VAR_I = 1.0 # variance of the anchor weights
 W_LAMBDA_I = DATA_NOISE/W_VAR_I # Strength of the regularization term for anchor weights
 B_VAR_I = W_VAR_I # variance of the anchor biases 
 B_LAMBDA_I = DATA_NOISE/B_VAR_I # Strength of the regularization term for anchor biases
@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_R_L_10_'  #(R = ratio of Data Noise and Variance) L_10 is Ratio = 1/10
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 
