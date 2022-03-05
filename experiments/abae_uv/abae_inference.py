@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_R_L_10_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 
@@ -153,25 +153,33 @@ if __name__ == "__main__":
 	# create the NNs
 	CNNs=[]
 	AVAILABLE_ANCHORS = [1,2,3,4,5,6,7,8,9,10]
-	fig,ax = plt.subplots(1,2+len(AVAILABLE_ANCHORS))
+	fig,ax = plt.subplots(10,2+len(AVAILABLE_ANCHORS))
 	ax = ax.ravel()
-	ax[0].imshow(X[0,:,:,0])
-	ax[0].axis('off')
-	ax[0].set_title('INPUT')
-	ax[1].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-	ax[1].axis('off')
-	ax[1].set_title('TARGET')
+
 	#for m in range(ENSEMBLE_SIZE):
 	for m in range(ENSEMBLE_SIZE):
 		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_var_i=W_VAR_I, W_lambda_i=W_LAMBDA_I, b_var_i=B_VAR_I, b_lambda_i=B_LAMBDA_I))
 		#CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
 		
 	k = 0
-	for m in AVAILABLE_ANCHORS:
-		CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) + '.h5')
-		p = CNNs[m-1].predict(X)
-		ax[2+k].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-		ax[2+k].axis('off')
-		ax[2+k].set_title('ANC '+str(m))
-		k = k + 1
+	for e in range(10):
+		k = 0
+		ax[12*e].imshow(X[0,:,:,0])
+		ax[12*e].set_ylabel('ep = '+str(e+1))
+		ax[12*e].set_xticks([])
+		ax[12*e].set_yticks([])
+		ax[12*e + 1].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+		ax[12*e + 1].set_xticks([])
+		ax[12*e + 1].set_yticks([])
+		if e == 0:
+			ax[12*e].set_title('INPUT')
+			ax[12*e + 1].set_title('TARGET')
+		for m in AVAILABLE_ANCHORS:
+			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(e+1).zfill(2)+'.h5')
+			p = CNNs[m-1].predict(X)
+			ax[12*e+2+k].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+			ax[12*e+2+k].axis('off')
+			if e == 0:
+				ax[12*e+2+k].set_title('ANC '+str(m))
+			k = k + 1
 	plt.show()
