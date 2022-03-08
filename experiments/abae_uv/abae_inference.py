@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0001_VAR_d1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 
@@ -137,7 +137,7 @@ EIT_TRN = sorted(EIT_TRN)
 EIT_VAL = sorted(EIT_VAL)
 
 if __name__ == "__main__":
-	PATCH_NAME = EIT_VAL[100]
+	PATCH_NAME = EIT_TRN[100]
 	print(PATCH_NAME)
 	eit = pickle.load(open(PATCH_NAME, "rb" ))
 	aia = pickle.load(open(PATCH_NAME[:16]+'aia'+PATCH_NAME[19:], "rb" ))
@@ -152,8 +152,9 @@ if __name__ == "__main__":
 	print(nVal)
 	# create the NNs
 	CNNs=[]
-	AVAILABLE_ANCHORS = [1,2,3,4,5,6,7,8,9,10]
-	fig,ax = plt.subplots(10,2+len(AVAILABLE_ANCHORS))
+	AVAILABLE_ANCHORS = [1,2,3,4]
+	l = 2+len(AVAILABLE_ANCHORS)
+	fig,ax = plt.subplots(10,l)
 	ax = ax.ravel()
 
 	#for m in range(ENSEMBLE_SIZE):
@@ -164,22 +165,23 @@ if __name__ == "__main__":
 	k = 0
 	for e in range(10):
 		k = 0
-		ax[12*e].imshow(X[0,:,:,0])
-		ax[12*e].set_ylabel('ep = '+str(e+1))
-		ax[12*e].set_xticks([])
-		ax[12*e].set_yticks([])
-		ax[12*e + 1].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-		ax[12*e + 1].set_xticks([])
-		ax[12*e + 1].set_yticks([])
+		ax[l*e].imshow(X[0,:,:,0])
+		ax[l*e].set_ylabel('ep = '+str(e+1))
+		ax[l*e].set_xticks([])
+		ax[l*e].set_yticks([])
+		ax[l*e + 1].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+		ax[l*e + 1].set_xticks([])
+		ax[l*e + 1].set_yticks([])
 		if e == 0:
-			ax[12*e].set_title('INPUT')
-			ax[12*e + 1].set_title('TARGET')
+			ax[l*e].set_title('INPUT')
+			ax[l*e + 1].set_title('TARGET')
 		for m in AVAILABLE_ANCHORS:
 			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(e+1).zfill(2)+'.h5')
+			#CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE+'.h5')
 			p = CNNs[m-1].predict(X)
-			ax[12*e+2+k].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-			ax[12*e+2+k].axis('off')
+			ax[l*e+2+k].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+			ax[l*e+2+k].axis('off')
 			if e == 0:
-				ax[12*e+2+k].set_title('ANC '+str(m))
+				ax[l*e+2+k].set_title('ANC '+str(m))
 			k = k + 1
 	plt.show()
