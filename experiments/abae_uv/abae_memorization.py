@@ -80,7 +80,7 @@ from models.model_HighResnet_ABAE import make_CNN
 ENSEMBLE_SIZE = 4  # no. CNNs in ensemble
 REGULARIZATION = 'anc'  # type of regularisation to use - anc (anchoring) reg (regularised) free (unconstrained)
 BATCH_SIZE = 10  # Batch Size
-EPOCH0 = 1  # First epoch
+EPOCH0 = 11  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
 W_VAR_I = 0.1 # variance of the anchor weights
@@ -108,8 +108,8 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 OUTPUT_FOLDER = '/d0/models/'
 OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0001_VAR_d1_'
-TRAIN_DATE_RANGE = [20140101,20140430]
-VAL_DATE_RANGE = [20160101,20160131]
+TRAIN_DATE_RANGE = [20140101,20140228]
+VAL_DATE_RANGE = [20160101,20160115]
 
 if __name__ == "__main__":
 
@@ -121,13 +121,13 @@ if __name__ == "__main__":
 	for m in range(ENSEMBLE_SIZE):
 		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_var_i=W_VAR_I, W_lambda_i=W_LAMBDA_I, b_var_i=B_VAR_I, b_lambda_i=B_LAMBDA_I))
 		CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
-
+		CNNs[m].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+str(EPOCH0-1).zfill(2)+'.h5')
 	print(CNNs[-1].summary())
 
 	for m in range(ENSEMBLE_SIZE):
 		print('-- training: ' + str(m+1) + ' of ' + str(ENSEMBLE_SIZE) + ' CNNs --') 
 		checkpoint = ModelCheckpoint(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+'{epoch:02d}.h5', monitor='val_loss', verbose=1, save_weights_only=True, mode='auto', save_freq='epoch')
-		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, DateRange = TRAIN_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 10, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, DateRange = VAL_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
+		history = CNNs[m].fit(imageLoader(TRAIN_PATH, BATCH_SIZE, DateRange = TRAIN_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), batch_size = ((VFLIP+HFLIP)**2)*BATCH_SIZE, steps_per_epoch = nTrain//BATCH_SIZE, epochs = 20, callbacks=[checkpoint], validation_data=imageLoader(VAL_PATH, BATCH_SIZE, DateRange = VAL_DATE_RANGE, rng=rng, vflip=VFLIP, hflip=HFLIP), validation_steps=nVal//BATCH_SIZE, initial_epoch=EPOCH0-1)
 		pickle.dump(history.history['loss'],open(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+'loss.p','wb'))
 		pickle.dump(history.history['val_loss'],open(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+'val_loss.p','wb'))
 		pickle.dump(history.history['mse'],open(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+'mse.p','wb'))
