@@ -154,7 +154,7 @@ if __name__ == "__main__":
 	CNNs=[]
 	AVAILABLE_ANCHORS = [1,2,3,4]
 	l = 2+len(AVAILABLE_ANCHORS)
-	fig,ax = plt.subplots(10,l)
+	fig,ax = plt.subplots(l,10)
 	ax = ax.ravel()
 
 	#for m in range(ENSEMBLE_SIZE):
@@ -162,26 +162,26 @@ if __name__ == "__main__":
 		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_var_i=W_VAR_I, W_lambda_i=W_LAMBDA_I, b_var_i=B_VAR_I, b_lambda_i=B_LAMBDA_I))
 		#CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
 		
-	k = 0
 	for e in range(10):
 		k = 0
-		ax[l*e].imshow(X[0,:,:,0])
-		ax[l*e].set_ylabel('ep = '+str(e+1))
-		ax[l*e].set_xticks([])
-		ax[l*e].set_yticks([])
-		ax[l*e + 1].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-		ax[l*e + 1].set_xticks([])
-		ax[l*e + 1].set_yticks([])
+		ax[e].imshow(X[0,:,:,0])
+		ax[e].set_title('ep = '+str(2*e+2))
+		ax[e].set_xticks([])
+		ax[e].set_yticks([])
+		ax[e + 10].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+		ax[e + 10].set_xticks([])
+		ax[e + 10].set_yticks([])
 		if e == 0:
-			ax[l*e].set_title('INPUT')
-			ax[l*e + 1].set_title('TARGET')
+			ax[e].set_ylabel('INPUT')
+			ax[e + 10].set_ylabel('TARGET')
 		for m in AVAILABLE_ANCHORS:
-			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(e+1).zfill(2)+'.h5')
+			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(2*(e+1)).zfill(2)+'.h5')
 			#CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE+'.h5')
 			p = CNNs[m-1].predict(X)
-			ax[l*e+2+k].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
-			ax[l*e+2+k].axis('off')
+			ax[e+10*(k+2)].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+			ax[e+10*(k+2)].set_xticks([])
+			ax[e+10*(k+2)].set_yticks([])
 			if e == 0:
-				ax[l*e+2+k].set_title('ANC '+str(m))
+				ax[e+10*(k+2)].set_ylabel('ANC '+str(m))
 			k = k + 1
 	plt.show()
