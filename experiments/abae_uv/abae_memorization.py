@@ -86,7 +86,7 @@ DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
 W_VAR_I = 0.1 # variance of the anchor weights
 W_LAMBDA_I = 0.000001 # Strength of the regularization term for anchor weights
 B_VAR_I = W_VAR_I # variance of the anchor biases 
-B_LAMBDA_I = 0.0001 # Strength of the regularization term for anchor biases
+B_LAMBDA_I = W_LAMBDA_I # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
