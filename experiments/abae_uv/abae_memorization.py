@@ -84,7 +84,7 @@ EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
 W_VAR_I = 0.1 # variance of the anchor weights
-W_LAMBDA_I = 0.000001 # Strength of the regularization term for anchor weights
+W_LAMBDA_I = 0.0 # Strength of the regularization term for anchor weights
 B_VAR_I = W_VAR_I # variance of the anchor biases 
 B_LAMBDA_I = W_LAMBDA_I # Strength of the regularization term for anchor biases
 
@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_000001_VAR_d1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0_VAR_d1_'
 TRAIN_DATE_RANGE = [20140101,20140228]
 VAL_DATE_RANGE = [20160101,20160115]
 
