@@ -68,7 +68,7 @@ rng = np.random.default_rng(SEED_VALUE)
 
 ##------------------------------------------------------------------------------------
 ## Load CNN model and CNN coefficients
-from models.model_HighResnet_ABAE import make_CNN
+from models.model_HighResnet_ABAE_normal_init import make_CNN
 
 # CNN options
 ENSEMBLE_SIZE = 10  # no. CNNs in ensemble
