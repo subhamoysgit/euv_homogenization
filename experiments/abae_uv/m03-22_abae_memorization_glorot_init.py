@@ -108,7 +108,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0_ST_d1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_LAMBDA_0_ST_1_'
 TRAIN_DATE_RANGE = [20140101,20140228]
 VAL_DATE_RANGE = [20160101,20160115]
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
-		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_std_i=W_ST_I, W_lambda_i=W_LAMBDA_I, b_std_i=B_ST_I, b_lambda_i=B_LAMBDA_I))
+		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_st_i=W_ST_I, W_lambda_i=W_LAMBDA_I, b_st_i=B_ST_I, b_lambda_i=B_LAMBDA_I))
 		CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
 		if EPOCH0>1:
 			CNNs[m].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+str(EPOCH0-1).zfill(2)+'.h5')
