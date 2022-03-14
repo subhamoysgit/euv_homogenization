@@ -24,21 +24,22 @@ Template file to train single frame Super resolution.  It requires a combined lo
 ----------------------------------------------------------------------------------------------
 EXPERIMENT DESCRIPTION
 ----------------------------------------------------------------------------------------------
-Feb 23, 2022
+Mar 14, 2022
 
 loss is MSE
 
-First run abae memorizing a samll subset of the data. See if we can memorize, and see how does
-ensemble behave with memorized vs. unseen data
+Run abae memorizing a samll subset of the data. See if we can memorize, and see how does
+ensemble behave with memorized vs. unseen data, but using glorot intialization
 
 
 ----------------------------------------------------------------------------------------------
 RESULTS
 ----------------------------------------------------------------------------------------------
 
-
 What was the outcome of the experiment?  How did it match your expectatios and hopes?
 Is this your best model to date?
+
+
 
 """
 
@@ -74,7 +75,7 @@ rng = np.random.default_rng(SEED_VALUE)
 
 ##------------------------------------------------------------------------------------
 ## Load CNN model and CNN coefficients
-from models.model_HighResnet_ABAE import make_CNN
+from models.model_HighResnet_ABAE_glorot_init import make_CNN
 
 # CNN options
 ENSEMBLE_SIZE = 4  # no. CNNs in ensemble
@@ -83,10 +84,10 @@ BATCH_SIZE = 10  # Batch Size
 EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
-W_VAR_I = 0.1 # variance of the anchor weights
+W_ST_I = 1.0 # variance of the anchor weights
 W_LAMBDA_I = 0.0 # Strength of the regularization term for anchor weights
-B_VAR_I = W_VAR_I # variance of the anchor biases 
-B_LAMBDA_I = W_LAMBDA_I # Strength of the regularization term for anchor biases
+B_ST_I = 1.0 # variance of the anchor biases 
+B_LAMBDA_I = 0.0 # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
@@ -107,7 +108,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0_VAR_d1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0_ST_d1_'
 TRAIN_DATE_RANGE = [20140101,20140228]
 VAL_DATE_RANGE = [20160101,20160115]
 
@@ -119,7 +120,7 @@ if __name__ == "__main__":
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
-		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_var_i=W_VAR_I, W_lambda_i=W_LAMBDA_I, b_var_i=B_VAR_I, b_lambda_i=B_LAMBDA_I))
+		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_std_i=W_ST_I, W_lambda_i=W_LAMBDA_I, b_std_i=B_ST_I, b_lambda_i=B_LAMBDA_I))
 		CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
 		if EPOCH0>1:
 			CNNs[m].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+str(EPOCH0-1).zfill(2)+'.h5')
