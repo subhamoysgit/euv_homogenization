@@ -84,9 +84,9 @@ EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
 W_VAR_I = 0.1 # variance of the anchor weights
-W_LAMBDA_I = DATA_NOISE/W_VAR_I # Strength of the regularization term for anchor weights
+W_LAMBDA_I = 0.000001 # Strength of the regularization term for anchor weights
 B_VAR_I = W_VAR_I # variance of the anchor biases 
-B_LAMBDA_I = DATA_NOISE/B_VAR_I # Strength of the regularization term for anchor biases
+B_LAMBDA_I = W_LAMBDA_I # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0001_VAR_d1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_LAMBDA_0_VAR_d1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 
@@ -137,7 +137,7 @@ EIT_TRN = sorted(EIT_TRN)
 EIT_VAL = sorted(EIT_VAL)
 
 if __name__ == "__main__":
-	PATCH_NAME = EIT_TRN[100]
+	PATCH_NAME = EIT_VAL[50]
 	print(PATCH_NAME)
 	eit = pickle.load(open(PATCH_NAME, "rb" ))
 	aia = pickle.load(open(PATCH_NAME[:16]+'aia'+PATCH_NAME[19:], "rb" ))
@@ -165,7 +165,7 @@ if __name__ == "__main__":
 	for e in range(10):
 		k = 0
 		ax[e].imshow(X[0,:,:,0])
-		ax[e].set_title('ep = '+str(2*e+2))
+		ax[e].set_title('ep = '+str(e+1))
 		ax[e].set_xticks([])
 		ax[e].set_yticks([])
 		ax[e + 10].imshow(Y[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
@@ -175,7 +175,7 @@ if __name__ == "__main__":
 			ax[e].set_ylabel('INPUT')
 			ax[e + 10].set_ylabel('TARGET')
 		for m in AVAILABLE_ANCHORS:
-			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(2*(e+1)).zfill(2)+'.h5')
+			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(e+1).zfill(2)+'.h5')
 			#CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE+'.h5')
 			p = CNNs[m-1].predict(X)
 			ax[e+10*(k+2)].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
