@@ -107,9 +107,9 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_LAMBDA_0_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_LAMBDA_1_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
-VAL_DATE_RANGE = [20160101,20160229]
+VAL_DATE_RANGE = [20170101,20170229]
 
 EIT_TRN = []
 for root,dirs,files in os.walk(TRAIN_PATH):
@@ -137,7 +137,7 @@ EIT_TRN = sorted(EIT_TRN)
 EIT_VAL = sorted(EIT_VAL)
 
 if __name__ == "__main__":
-	PATCH_NAME = EIT_TRN[100]
+	PATCH_NAME = EIT_VAL[100]
 	print(PATCH_NAME)
 	eit = pickle.load(open(PATCH_NAME, "rb" ))
 	aia = pickle.load(open(PATCH_NAME[:16]+'aia'+PATCH_NAME[19:], "rb" ))
