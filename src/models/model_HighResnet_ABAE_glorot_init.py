@@ -74,7 +74,7 @@ def make_CNN(reg='anc',
 ##################initial layer###########################
 
 	W_anc_i = W_st_i*glorot(shape=[5,5,2,features])
-	b_anc_i = b_st_i*glorot(shape=[2,features])
+	b_anc_i = b_st_i*glorot(shape=[features])
 
 	# create custom regulariser
 	def custom_reg_W_i(weight_matrix):
@@ -98,7 +98,7 @@ def make_CNN(reg='anc',
 
 
 	W_anc_m = W_st_m*glorot(shape=[5,5,features,features])
-	b_anc_m = b_st_m*glorot(shape=[features,features])
+	b_anc_m = b_st_m*glorot(shape=[features])
 
 # create custom regulariser
 	def custom_reg_W_m(weight_matrix):
@@ -120,7 +120,7 @@ def make_CNN(reg='anc',
 ########### upsampling layer ##########################
 
 	W_anc_u = W_st_u*glorot(shape=[5,5,features,features])
-	b_anc_u = b_st_u*glorot(shape=[features,features])
+	b_anc_u = b_st_u*glorot(shape=[features])
 
 # create custom regulariser
 	def custom_reg_W_u(weight_matrix):
@@ -142,7 +142,7 @@ def make_CNN(reg='anc',
 ######### final layer ###################################
 
 	W_anc_f = W_st_f*glorot(shape=[1,1,features,1])
-	b_anc_f = b_st_f*glorot(shape=[features,1])
+	b_anc_f = b_st_f*glorot(shape=[1])
 
 # create custom regulariser
 	def custom_reg_W_f(weight_matrix):
