@@ -47,29 +47,29 @@ def make_CNN(reg='anc',
 	if W_st_m is None:
 		W_st_m = W_st_i
 	if W_lambda_m is None:
-		W_lambda_m = W_lambda_i.copy()
+		W_lambda_m = W_lambda_i
 	if b_st_m is None:
 		b_st_m = b_st_i
 	if b_lambda_m is None:
-		b_lambda_m = b_lambda_i.copy()
+		b_lambda_m = b_lambda_i
 
 	if W_st_u is None:
 		W_st_u = W_st_i
 	if W_lambda_u is None:
-		W_lambda_u = W_lambda_i.copy()
+		W_lambda_u = W_lambda_i
 	if b_st_u is None:
 		b_st_u = b_st_i
 	if b_lambda_u is None:
-		b_lambda_u = b_lambda_i.copy()
+		b_lambda_u = b_lambda_i
 
 	if W_st_f is None:
 		W_st_f = W_st_i
 	if W_lambda_f is None:
-		W_lambda_f = W_lambda_i.copy()
+		W_lambda_f = W_lambda_i
 	if b_st_f is None:
 		b_st_f = b_st_i
 	if b_lambda_f is None:
-		b_lambda_f = b_lambda_i.copy()
+		b_lambda_f = b_lambda_i
 
 ##################initial layer###########################
 
