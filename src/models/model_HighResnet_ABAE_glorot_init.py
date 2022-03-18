@@ -47,34 +47,36 @@ def make_CNN(reg='anc',
 	if W_st_m is None:
 		W_st_m = W_st_i
 	if W_lambda_m is None:
-		W_lambda_m = W_lambda_i
+		W_lambda_m = W_lambda_i.copy()
 	if b_st_m is None:
 		b_st_m = b_st_i
 	if b_lambda_m is None:
-		b_lambda_m = b_lambda_i
+		b_lambda_m = b_lambda_i.copy()
 
 	if W_st_u is None:
 		W_st_u = W_st_i
 	if W_lambda_u is None:
-		W_lambda_u = W_lambda_i
+		W_lambda_u = W_lambda_i.copy()
 	if b_st_u is None:
 		b_st_u = b_st_i
 	if b_lambda_u is None:
-		b_lambda_u = b_lambda_i
+		b_lambda_u = b_lambda_i.copy()
 
 	if W_st_f is None:
 		W_st_f = W_st_i
 	if W_lambda_f is None:
-		W_lambda_f = W_lambda_i
+		W_lambda_f = W_lambda_i.copy()
 	if b_st_f is None:
 		b_st_f = b_st_i
 	if b_lambda_f is None:
-		b_lambda_f = b_lambda_i
+		b_lambda_f = b_lambda_i.copy()
 
 ##################initial layer###########################
 
 	W_anc_i = W_st_i*glorot(shape=[5,5,2,features])
 	b_anc_i = b_st_i*glorot(shape=[features])
+	W_lambda_i = W_lambda_i*(2*5*5 + features*5*5)/6
+	b_lambda_i = b_lambda_i*(features)/6
 
 	# create custom regulariser
 	def custom_reg_W_i(weight_matrix):
@@ -99,6 +101,8 @@ def make_CNN(reg='anc',
 
 	W_anc_m = W_st_m*glorot(shape=[5,5,features,features])
 	b_anc_m = b_st_m*glorot(shape=[features])
+	W_lambda_m = W_lambda_m*(features*5*5 + features*5*5)/6
+	b_lambda_m = b_lambda_m*(features)/6
 
 # create custom regulariser
 	def custom_reg_W_m(weight_matrix):
@@ -121,6 +125,8 @@ def make_CNN(reg='anc',
 
 	W_anc_u = W_st_u*glorot(shape=[5,5,features,features])
 	b_anc_u = b_st_u*glorot(shape=[features])
+	W_lambda_u = W_lambda_u*(features*5*5 + features*5*5)/6
+	b_lambda_u = b_lambda_u*(features)/6
 
 # create custom regulariser
 	def custom_reg_W_u(weight_matrix):
@@ -143,6 +149,8 @@ def make_CNN(reg='anc',
 
 	W_anc_f = W_st_f*glorot(shape=[1,1,features,1])
 	b_anc_f = b_st_f*glorot(shape=[1])
+	W_lambda_f = W_lambda_f*(features*1*1 + 1*1*1)/6
+	b_lambda_f = b_lambda_f*(1)/6
 
 # create custom regulariser
 	def custom_reg_W_f(weight_matrix):
