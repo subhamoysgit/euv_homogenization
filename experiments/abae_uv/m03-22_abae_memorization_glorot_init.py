@@ -75,7 +75,7 @@ rng = np.random.default_rng(SEED_VALUE)
 
 ##------------------------------------------------------------------------------------
 ## Load CNN model and CNN coefficients
-from models.model_HighResnet_ABAE_glorot_init import make_CNN
+from models.model_HighResnet_ABAE_glorot_init_last import make_CNN
 
 # CNN options
 ENSEMBLE_SIZE = 4  # no. CNNs in ensemble
@@ -84,10 +84,10 @@ BATCH_SIZE = 10  # Batch Size
 EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
-W_ST_I = 1.0 # variance of the anchor weights
-W_LAMBDA_I = 0.001 # Strength of the regularization term for anchor weights
-B_ST_I = 1.0 # variance of the anchor biases 
-B_LAMBDA_I = 0.001 # Strength of the regularization term for anchor biases
+W_ST_f = 1.0 # variance of the anchor weights
+W_LAMBDA_f = 0.001 # Strength of the regularization term for anchor weights
+B_ST_f = 1.0 # variance of the anchor biases 
+B_LAMBDA_f = 0.001 # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_LAMBDA_SCALED_001_ST_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'
 TRAIN_DATE_RANGE = [20140101,20140228]
 VAL_DATE_RANGE = [20160101,20160115]
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
 	# create the NNs
 	CNNs=[]
 	for m in range(ENSEMBLE_SIZE):
-		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_st_i=W_ST_I, W_lambda_i=W_LAMBDA_I, b_st_i=B_ST_I, b_lambda_i=B_LAMBDA_I))
+		CNNs.append(make_CNN(reg=REGULARIZATION, features=32, rng=rng, W_st_f=W_ST_f, W_lambda_f=W_LAMBDA_f, b_st_f=B_ST_f, b_lambda_f=B_LAMBDA_f))
 		CNNs[m].compile(optimizer=optimizer, loss = 'mse', metrics=['mse'], run_eagerly=True)
 		if EPOCH0>1:
 			CNNs[m].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m+1).zfill(2) +'_'+str(EPOCH0-1).zfill(2)+'.h5')
