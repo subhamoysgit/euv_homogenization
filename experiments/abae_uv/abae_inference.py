@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_LAMBDA_1_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20170101,20170229]
 
@@ -136,15 +136,22 @@ for root,dirs,files in os.walk(VAL_PATH):
 EIT_TRN = sorted(EIT_TRN)
 EIT_VAL = sorted(EIT_VAL)
 
+from sunpy.map import Map
+file_m = '/d1/sep_dataset/videos/positives/mag_200612142107.p'
+mag = pickle.load(open(file_m,'rb'))
+mag = mag[:,:,0]/65535
+mag_patch = mag[100:164,100:164]
+
+
 if __name__ == "__main__":
-	PATCH_NAME = EIT_VAL[100]
+	PATCH_NAME = EIT_TRN[100]
 	print(PATCH_NAME)
 	eit = pickle.load(open(PATCH_NAME, "rb" ))
 	aia = pickle.load(open(PATCH_NAME[:16]+'aia'+PATCH_NAME[19:], "rb" ))
 	X = np.zeros((1,64,64,2))
 	Y = np.zeros((1,256,256,1))
 	prof = eit[:,:,1]
-	X[0,:,:,0] = eit[:,:,0]
+	X[0,:,:,0] = np.min(eit[:,:,0]) + (np.max(eit[:,:,0])-np.min(eit[:,:,0]))*mag_patch#eit[:,:,0]
 	X[0,:,:,1] = prof[:,:]
 	Y[0,:,:,0] = aia[:,:]
 	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH, trainDateRange = TRAIN_DATE_RANGE, valDateRange = VAL_DATE_RANGE)
@@ -178,7 +185,7 @@ if __name__ == "__main__":
 			CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE + str(m).zfill(2) +'_'+str(e+1).zfill(2)+'.h5')
 			#CNNs[m-1].load_weights(OUTPUT_FOLDER + OUTPUT_FILE+'.h5')
 			p = CNNs[m-1].predict(X)
-			ax[e+10*(k+2)].imshow(p[0,:,:,0],vmin = np.min(aia),vmax =np.max(aia))
+			ax[e+10*(k+2)].imshow(p[0,:,:,0])#,vmin = np.min(aia),vmax =np.max(aia))
 			ax[e+10*(k+2)].set_xticks([])
 			ax[e+10*(k+2)].set_yticks([])
 			if e == 0:
