@@ -106,7 +106,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 TEST_DATE_RANGE = [20170101,20170229]
@@ -218,7 +218,7 @@ if __name__ == "__main__":
 		ARRAY_VAL[i*64*64:(i+1)*64*64,1] = np.array(output_sdev_vl)
 		ARRAY_TST[i*64*64:(i+1)*64*64,0] = np.array(input_intensity_ts)
 		ARRAY_TST[i*64*64:(i+1)*64*64,1] = np.array(output_sdev_ts)
-		pickle.dump(ARRAY_TRN,open('/d0/models/EUV_TRN_SDEV_20k_'+str(N_PATCHES),'wb'))
-		pickle.dump(ARRAY_VAL,open('/d0/models/EUV_VAL_SDEV_20k_'+str(N_PATCHES),'wb'))
-		pickle.dump(ARRAY_TST,open('/d0/models/EUV_TST_SDEV_20k_'+str(N_PATCHES),'wb'))
+		pickle.dump(ARRAY_TRN,open('/d0/models/EUV_TRN_SDEV_70k_'+str(N_PATCHES),'wb'))
+		pickle.dump(ARRAY_VAL,open('/d0/models/EUV_VAL_SDEV_70k_'+str(N_PATCHES),'wb'))
+		pickle.dump(ARRAY_TST,open('/d0/models/EUV_TST_SDEV_70k_'+str(N_PATCHES),'wb'))
 		print(str(1 + i) + ' patches saved')
