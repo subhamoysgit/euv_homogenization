@@ -106,8 +106,8 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_2_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
-ANCHOR_PARAMS  = '_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_2_'
+OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_002_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+ANCHOR_PARAMS  = '_GLOROT_UNIF_last_LAMBDA_SCALED_002_ST_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20160101,20160229]
 TEST_DATE_RANGE = [20170101,20170229]
