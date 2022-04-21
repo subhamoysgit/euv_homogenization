@@ -85,9 +85,9 @@ EPOCH0 = 1  # First epoch
 
 DATA_NOISE = 0.1 # noise variance as mean of aia patch hist
 W_ST_f = 1.0 # variance of the anchor weights
-W_LAMBDA_f = 0.002 # Strength of the regularization term for anchor weights
+W_LAMBDA_f = 0.01 # Strength of the regularization term for anchor weights
 B_ST_f = 1.0 # variance of the anchor biases 
-B_LAMBDA_f = 0.002 # Strength of the regularization term for anchor biases
+B_LAMBDA_f = 0.01 # Strength of the regularization term for anchor biases
 
 
 ##------------------------------------------------------------------------------------
@@ -108,7 +108,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_002_ST_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_01_ST_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]#[20140101,20140228]
 VAL_DATE_RANGE = [20160101,20160229]#[20160101,20160115]
 
