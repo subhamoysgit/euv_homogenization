@@ -107,7 +107,7 @@ optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001,beta_1=0.5)
 
 
 OUTPUT_FOLDER = '/d0/models/'
-OUTPUT_FILE = 'eit_aia_sr_abae_small_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
+OUTPUT_FILE = 'eit_aia_sr_abae_medium_GLOROT_UNIF_last_LAMBDA_SCALED_001_ST_1_'#'eit_aia_sr_big_v17'#'eit_aia_sr_abae_small_LAMBDA_01_VAR_1_'
 TRAIN_DATE_RANGE = [20140101,20141231]
 VAL_DATE_RANGE = [20170101,20170229]
 
@@ -151,7 +151,7 @@ if __name__ == "__main__":
 	X = np.zeros((1,64,64,2))
 	Y = np.zeros((1,256,256,1))
 	prof = eit[:,:,1]
-	X[0,:,:,0] = np.min(eit[:,:,0]) + (np.max(eit[:,:,0])-np.min(eit[:,:,0]))*mag_patch#eit[:,:,0]
+	X[0,:,:,0] = eit[:,:,0]#np.min(eit[:,:,0]) + (np.max(eit[:,:,0])-np.min(eit[:,:,0]))*mag_patch
 	X[0,:,:,1] = prof[:,:]
 	Y[0,:,:,0] = aia[:,:]
 	nTrain, nVal = imageIndexer(TRAIN_PATH, VAL_PATH, trainDateRange = TRAIN_DATE_RANGE, valDateRange = VAL_DATE_RANGE)
